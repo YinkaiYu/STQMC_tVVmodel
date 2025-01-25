@@ -1,0 +1,42 @@
+## subroutine Introduction
+
+#SuNf: main subroutine of DQMC
+
+#define variables:
+** blockc: define and allocate variables.
+** block_obs: define and allocate observables.
+** salph: define and assign value for the intermediate variables. 
+
+#set up hopping:
+** sli: define functions related to lattice structure. 
+** setH: set up hopping matrix
+** sthop: set up exponential hopping matrix
+
+#update:
+** upgradeU: update auxiliary field of Hubbard interaction.
+** upgradeJ: update auxiliary field of hopping square(J) interaction.
+
+#matrix operatoration:
+** mmuur: multiply UR matrix by interaction trotter exponential matrix
+**mmthr: multiply UR matrix by hopping trotter exponential matrix
+**mmuul:multiply UL matrix by interaction trotter exponetial matrix
+**mmthl:multiply UL matrix by hopping trotter exponetial matrix
+**mmuurm1: divide UR matrix by interaction trotter exponential matrix
+**mmthrm1:  divide UR matrix by hopping trotter exponential matrix
+**mmuulm1: divide UL matrix by interaction trotter exponential matrix
+**mmthlm1: divide UL matrix by hopping trotter exponential matrix
+
+#stabilization:
+**ortho: SVD orthogalization of UR matrix 
+
+#time-dependent measurement:
+**dyn: compute time-dependent single-particle Greens' function
+**propr, proprm1: propagate single-particle Greens' function at \tau to \tau+1
+
+#measurement and output
+** calcgr: calculate equal-time single-particle Greens' function
+** obser: evaluate equal-time observables using equal-time Greens' functions.
+** obsert: evaluate unequal-time observables using time-dependent Greens' functions.
+** preq: output equal-time observables.
+** prtau: output time unequal-time observables.
+
