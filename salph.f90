@@ -20,7 +20,8 @@
           NFLIPL(-1) =  1
           NFLIPL( 1) =  -1
           
-          ALPHA  =  acosh(exp(RJ*dtau/2.d0))
+          ! V1 < 0 
+          ALPHA  =  acosh(exp(-RJ*dtau/2.d0))
           
           ! Same for current and for kinetic.
           XSIGP2(-1) = EXP( 1.D0* ALPHA * dble(-1))
@@ -35,6 +36,7 @@
                  IF(NL==-1) NLN = 1
                  DELLP2(NL) =  (XSIGP2(NLN)/XSIGP2(NL)) - 1.D0
                  DELLM2(NL) =  (XSIGM2(NLN)/XSIGM2(NL)) - 1.D0                  
+                 ratio_const(NL) = EXP(-1.D0* ALPHA * dble(NLN - NL) )
              ENDIF
           ENDDO
           

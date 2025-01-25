@@ -39,6 +39,18 @@
                 ENDDO
              ENDDO
           ENDIF
+          
+          IF (NFLAG.EQ.1 .AND. RJ.LT. -ZERO) THEN
+             DO I = 1,LFAM
+                I1 = L_bonds(I,0  ) 
+                I2 = L_bonds(I,nf1) 
+                ! Kenitic
+                DO J = 1,N
+                    A(J,I1) = DCMPLX(XSIGP2(NSIGL_K(I,nf1,NTAU)),0.D0)*A(J,I1)
+                    A(J,I2) = DCMPLX(XSIGP2(NSIGL_K(I,nf1,NTAU)),0.D0)*A(J,I2)   
+                ENDDO
+             ENDDO
+          ENDIF
 
           DEALLOCATE (V1, V2)
 

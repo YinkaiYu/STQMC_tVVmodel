@@ -42,7 +42,7 @@
 
        if( RJ>0 ) then
            DEL44   =  DELLP2( NSIGL_K(I,NF1,NTAU) )   
-           DEL55   =  DELLm2( NSIGL_K(I,NF1,NTAU) )  
+           DEL55   =  DELLM2( NSIGL_K(I,NF1,NTAU) )  
        ENDIF
 
 	   G44UP = CMPLX(0.D0,0.D0)
@@ -82,6 +82,11 @@
                 &     G45UP*G54UP
          
        RATIOtot =    RATIOUP  
+       if( RJ < 0) then
+           RATIOtot =    RATIOUP  * ratio_const(NSIGL_K(I,NF1,NTAU))
+       else
+           RATIOtot =    RATIOUP  
+       ENDIF
 
 
 	   RATIO_RE_ABS = abs(RATIOtot)

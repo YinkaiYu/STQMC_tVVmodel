@@ -177,7 +177,7 @@
    if ( LTROT > 0 ) then
       DO NT = 1,LTROT
          CALL MMTHR(UR)
-         IF (RJ > Zero) THEN
+         IF (abs(RJ) > Zero) THEN
             DO NF = 1,NFAM
                NFLAG = 2
                CALL MMUUR(UR, NF, NT, NFLAG)
@@ -276,7 +276,7 @@
                   CALL MMUUL ( UL,NF,NT,NFLAG )
                   CALL MMUURM1( UR,NF,NT,NFLAG )
                endif
-               if (RJ > Zero) THEN
+               if (abs(RJ) > Zero) THEN
                   DO NF = NFAM,1,-1
                      CALL UPGRADEJ(NT,NF,ISEED,UL,UR,ULRINV,phase)
                      NFLAG = 1
@@ -308,7 +308,7 @@
                CALL MMTHR (UR)
                CALL MMTHLM1(UL)
          
-               IF (RJ > Zero) THEN
+               IF (abs(RJ) > Zero) THEN
                   DO NF = 1,NFAM
                      NFLAG = 2
                      CALL MMUUR (UR, NF, NT, NFLAG)
