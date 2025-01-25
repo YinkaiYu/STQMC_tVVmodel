@@ -3,7 +3,7 @@
 !!        Use Lattices_v3
 
 
-        Real (Kind=8),save :: BETA , RJ, RHUB,  RT1, DTAU, PI,  TwistX
+        Real (Kind=8),save :: BETA , RV1, RV2, RHUB,  RT1, DTAU, PI,  TwistX
         Integer,      save :: LTROT, NWRAP, N_SUN, NBIN, NSWEEP,  NORB, NORB1, NDIM, LTAU,  &
              &                LFAM, NFAM, Nbond, Nnext, nspin, LQ, NLX, NLY, NE, Itwist
         real(kind=8), DIMENSION(:), save :: a1_p(2), a2_p(2), b1_p(2), b2_p(2)
@@ -11,7 +11,7 @@
         Integer,  Dimension(:,:), Allocatable, Save :: list(:,:), invlist(:,:), nlist(:,:), invnlist(:,:,:,:)
         Integer,  dimension(:,:), allocatable, save :: lattimj(:,:)
 	    INTEGER,  Dimension(:,:), Allocatable, Save :: L_bonds, L_next, NSIGL_U
-        INTEGER,  Dimension(:,:,:), Allocatable, Save :: NSIGL_K
+        INTEGER,  Dimension(:,:,:), Allocatable, Save :: NAUX_V1, NAUX_V2
         INTEGER,  Save ::  NFLIPL(-1:1)
         
         COMPLEX (Kind=8), Dimension(:,:),   Allocatable, Save ::  PROJ, ZKRON
@@ -20,8 +20,8 @@
         COMPLEX (Kind=8),  Save ::   XSIGMA_U(-1:1), DELTA_U(-1:1), &
              &                       UR_K(2,2), URT_K(2,2), obs(30)
 
-        REAL (Kind=8), Save ::   XSIGP2(-1:1),XSIGM2(-1:1), &
-             &                   DELLP2(-1:1), DELLM2(-1:1), ETAL(-2:2), &
+        REAL (Kind=8), Save ::   XSIGP1(-1:1),XSIGM1(-1:1),XSIGP2(-1:1),XSIGM2(-1:1), &
+             &                   DELLP1(-1:1),DELLM1(-1:1),DELLP2(-1:1),DELLM2(-1:1), ETAL(-2:2), &
              &                   FD(4), ZERO, ratio_const(-1:1)
 
         Logical :: L_Trot_hop
@@ -56,7 +56,7 @@
           DTAU   = BETA/DBLE(LTROT)
           
           Allocate( L_Bonds(LQ,0:Nbond), L_next(LQ,0:Nnext), list(LQ,2), invlist(NLX,NLY), nlist(Ndim, 4), invnlist(NLX,NLY,norb,nspin), &
-               &    NSIGL_K(LQ,Nfam,LTROT), NSIGL_U(NDIM,LTROT), Lattimj(LQ,LQ)  )
+               &    NAUX_V1(LQ,Nfam,LTROT), NAUX_V2(LQ,Nnext,LTROT), NSIGL_U(NDIM,LTROT), Lattimj(LQ,LQ)  )
           Allocate ( PROJ(NDIM,NDIM),   ZKRON(NDIM,NDIM) ) 
           Allocate ( URT_tot(NDIM,NDIM), URTM1_tot(NDIM,NDIM) )
 

@@ -25,7 +25,7 @@
 
 
         CALL MMTHLM1(AIN)
-        if (RJ > Zero)    then
+        if (RV1 > Zero)    then
            DO NF = 1,NFAM
               NFLAG = 2
               CALL MMUULM1(AIN,NF,NT,NFLAG)

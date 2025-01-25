@@ -43,11 +43,11 @@
         COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
         INTEGER :: NTAU, ISEED
       END SUBROUTINE UPGRADEU
-      SUBROUTINE UPGRADEJ(NTAU,NF,ISEED,UL,UR,ULRINV,phase)
+      SUBROUTINE upgradeV(NTAU,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
         COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
         complex (kind=8) :: phase
-        Integer :: NTAU,NF,ISEED
-      END SUBROUTINE UPGRADEJ
+        Integer :: NTAU,NF,ISEED,NFLAG
+      END SUBROUTINE upgradeV
       SUBROUTINE MMTHR(A)
         COMPLEX (Kind=8), Dimension(:,:) :: A
       END SUBROUTINE MMTHR
@@ -82,7 +82,7 @@
    IF (IRANK == 0) THEN
       OPEN (UNIT=50,FILE='info',STATUS='UNKNOWN')
       OPEN ( UNIT=20, FILE='paramC_sets',STATUS='UNKNOWN' )
-      READ(20,*) BETA, LTROT, NWRAP, RT1, RHUB,  RJ 
+      READ(20,*) BETA, LTROT, NWRAP, RT1, RHUB,  RV1, RV2
       READ(20,*) NBIN, NSWEEP, LTAU, NTDM
       READ(20,*) NLX, NLY, Itwist, TwistX, N_SUN, NE
       CLOSE(20)
@@ -90,7 +90,8 @@
       L_Trot_hop = .false.
       NB_Field = 0
    CALL MPI_BCAST(BETA ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
-   CALL MPI_BCAST(RJ ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
+   CALL MPI_BCAST(RV1 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
+   CALL MPI_BCAST(RV2 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(RHUB ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(RT1 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(Itwist ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IERR)
@@ -122,7 +123,8 @@
       WRITE(50,*) 'N: SU(N)         :',N_SUN
       WRITE(50,*) 'Particle #       :',NE
       WRITE(50,*) 'Hopping t        :',RT1
-      WRITE(50,*) 'J                :',RJ
+      WRITE(50,*) 'V1 < 0           :',RV1
+      WRITE(50,*) 'V2 > 0           :',RV2
       WRITE(50,*) 'Hubbard          :',RHUB
       WRITE(50,*) 'Theta            :',BETA
       WRITE(50,*) 'Trotter number   :',LTROT
@@ -177,15 +179,21 @@
    if ( LTROT > 0 ) then
       DO NT = 1,LTROT
          CALL MMTHR(UR)
-         IF (abs(RJ) > Zero) THEN
+         IF (abs(RV1) > Zero) THEN
             DO NF = 1,NFAM
+               NFLAG = 1
+               CALL MMUUR(UR, NF, NT, NFLAG)
+            ENDDO
+         ENDIF
+         IF (abs(RV2) > Zero) THEN
+            DO NF = 1,Nnext
                NFLAG = 2
                CALL MMUUR(UR, NF, NT, NFLAG)
             ENDDO
          ENDIF
          if(abs(RHUB)>zero) then
-         NFLAG = 3 ! Hubbard
-         CALL MMUUR(UR, NF, NT, NFLAG)
+            NFLAG = 3 ! Hubbard
+            CALL MMUUR(UR, NF, NT, NFLAG)
          endif
          IF (MOD(NT,NWRAP) == 0) THEN
             CALL ORTHO(UR,NCON)
@@ -276,10 +284,18 @@
                   CALL MMUUL ( UL,NF,NT,NFLAG )
                   CALL MMUURM1( UR,NF,NT,NFLAG )
                endif
-               if (abs(RJ) > Zero) THEN
+               if (abs(RV2) > Zero) THEN
+                  DO NF = Nnext,1,-1
+                     NFLAG = 2
+                     CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
+                     CALL MMUUL (UL,NF,NT,NFLAG)
+                     CALL MMUURM1(UR,NF,NT,NFLAG)
+                  ENDDO
+               endif
+               if (abs(RV1) > Zero) THEN
                   DO NF = NFAM,1,-1
-                     CALL UPGRADEJ(NT,NF,ISEED,UL,UR,ULRINV,phase)
                      NFLAG = 1
+                     CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
                      CALL MMUUL (UL,NF,NT,NFLAG)
                      CALL MMUURM1(UR,NF,NT,NFLAG)
                   ENDDO
@@ -308,18 +324,26 @@
                CALL MMTHR (UR)
                CALL MMTHLM1(UL)
          
-               IF (abs(RJ) > Zero) THEN
+               IF (abs(RV1) > Zero) THEN
                   DO NF = 1,NFAM
+                     NFLAG = 1
+                     CALL MMUUR (UR, NF, NT, NFLAG)
+                     CALL MMUULM1 (UL, NF, NT, NFLAG)
+                     CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
+                  ENDDO
+               ENDIF
+               IF (abs(RV2) > Zero) THEN
+                  DO NF = 1,Nnext
                      NFLAG = 2
                      CALL MMUUR (UR, NF, NT, NFLAG)
                      CALL MMUULM1 (UL, NF, NT, NFLAG)
-                     CALL UPGRADEJ(NT,NF,ISEED,UL,UR,ULRINV,phase)
+                     CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
                   ENDDO
                ENDIF
                if(abs(RHUB)>zero) then
-               NFLAG = 3 ! Hubbard
-               CALL MMUUR (UR, NF, NT, NFLAG)
-               CALL MMUULM1(UL, NF, NT, NFLAG)
+                  NFLAG = 3 ! Hubbard
+                  CALL MMUUR (UR, NF, NT, NFLAG)
+                  CALL MMUULM1(UL, NF, NT, NFLAG)
                endif
                IF (abs(RHUB) > ZERO) CALL UPGRADEU(NT,ISEED, UL,UR, ULRINV)
                ! IF (NT >= NME_ST .AND. NT <= NME_EN) THEN

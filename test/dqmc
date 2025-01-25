@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -J CDW_test
+#SBATCH -J yyk_debug_tVVmodel
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -p fat6348

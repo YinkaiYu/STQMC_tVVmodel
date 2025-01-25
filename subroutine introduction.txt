@@ -14,7 +14,7 @@
 
 #update:
 ** upgradeU: update auxiliary field of Hubbard interaction.
-** upgradeJ: update auxiliary field of hopping square(J) interaction.
+** upgradeV: update auxiliary field of V interaction.
 
 #matrix operatoration:
 ** mmuur: multiply UR matrix by interaction trotter exponential matrix

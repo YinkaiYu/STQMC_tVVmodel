@@ -32,7 +32,7 @@
             do nf = 1, Nbond
                 i_n = L_bonds(ii,nf)
                 kinetic = kinetic - RT1*real(GRUPC(i_0,i_n) + GRUPC(i_n,i_0))*real(phase)
-                potential = potential - RJ*real(GRUPC(i_0,i_0)*GRUPC(i_n,i_n) + GRUPC(i_0,i_n)*GRUP(i_n,i_0))*real(phase)
+                potential = potential - RV1*real(GRUPC(i_0,i_0)*GRUPC(i_n,i_n) + GRUPC(i_0,i_n)*GRUP(i_n,i_0))*real(phase)
             enddo
         enddo
         

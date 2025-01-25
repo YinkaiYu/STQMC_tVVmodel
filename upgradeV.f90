@@ -1,4 +1,4 @@
-    SUBROUTINE UPGRADEJ(NTAU,NF,ISEED,UL,UR,ULRINV,phase)     
+    SUBROUTINE upgradeV(NTAU,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)     
     
     Use Blockc
     Use Block_obs
@@ -15,7 +15,7 @@
 
 	COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
     complex(kind=8) :: phase    
-    Integer :: NTAU,NF,ISEED
+    Integer :: NTAU,NF,ISEED,NFLAG
         
         !Local
 	COMPLEX (Kind=8), Dimension(:), Allocatable :: VEC1, VEC2, &
@@ -31,18 +31,19 @@
 
 	ACCM = 0.D0
 	DO I = 1,LFAM
-	   I4 = L_Bonds(I,0   ) 
-	   I5 = L_Bonds(I,NF1 ) 
 
-     
-       if( RJ < 0) then
-           DEL44   =  DELLP2( NSIGL_K(I,NF1,NTAU) )   
-           DEL55   =  DELLP2( NSIGL_K(I,NF1,NTAU) )
+       if( NFLAG == 1 ) then ! V1 < 0, (ni + nj - 1)
+           I4 = L_Bonds(I,0   ) 
+           I5 = L_Bonds(I,NF1 ) 
+           DEL44   =  DELLP1( NAUX_V1(I,NF1,NTAU) )   
+           DEL55   =  DELLP1( NAUX_V1(I,NF1,NTAU) )
        ENDIF
 
-       if( RJ>0 ) then
-           DEL44   =  DELLP2( NSIGL_K(I,NF1,NTAU) )   
-           DEL55   =  DELLM2( NSIGL_K(I,NF1,NTAU) )  
+       if( NFLAG == 2 ) then ! V2 > 0, (ni - nj)
+           I4 = L_next(I,0   ) 
+           I5 = L_next(I,NF1 ) 
+           DEL44   =  DELLP2( NAUX_V2(I,NF1,NTAU) )   
+           DEL55   =  DELLM2( NAUX_V2(I,NF1,NTAU) )  
        ENDIF
 
 	   G44UP = CMPLX(0.D0,0.D0)
@@ -82,10 +83,13 @@
                 &     G45UP*G54UP
          
        RATIOtot =    RATIOUP  
-       if( RJ < 0) then
-           RATIOtot =    RATIOUP  * ratio_const(NSIGL_K(I,NF1,NTAU))
-       else
-           RATIOtot =    RATIOUP  
+
+       if( NFLAG == 1 ) then ! V1 < 0, (ni + nj - 1)
+           RATIOtot =    RATIOUP  * ratio_const(NAUX_V1(I,NF1,NTAU))
+       ENDIF
+
+       if( NFLAG == 2 ) then ! V2 > 0, (ni - nj)
+           RATIOtot =    RATIOUP
        ENDIF
 
 
@@ -140,7 +144,12 @@
                   &      DCMPLX(DEL55,0.D0)*UR(I5,NL)   
               ENDDO
               !	      Flip:
-              NSIGL_K(I,Nf1,NTAU) =    -NSIGL_K(I,Nf1,NTAU)    
+              if( NFLAG == 1 ) then ! V1 < 0, (ni + nj - 1)
+                NAUX_V1(I,Nf1,NTAU) = - NAUX_V1(I,Nf1,NTAU)    
+              endif
+              if( NFLAG == 2 ) then ! V2 > 0, (ni - nj)
+                NAUX_V2(I,Nf1,NTAU) = - NAUX_V2(I,Nf1,NTAU)    
+              endif
        endif
     ENDDO
 	OBS(29) = OBS(29) + CMPLX(ACCM/DBLE(LFAM),0.D0)
@@ -148,4 +157,4 @@
     
     Deallocate (VEC1, VEC2,VHLP1, UHLP1, VHLP2, UHLP2,V1, V2, U1, U2 )
 	 
-      END SUBROUTINE UPGRADEJ
+END SUBROUTINE upgradeV

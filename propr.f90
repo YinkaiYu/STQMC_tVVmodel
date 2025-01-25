@@ -24,7 +24,7 @@
 
 
         CALL MMTHR(AIN)
-        if (RJ > Zero)    then 
+        if (RV1 > Zero)    then 
            DO NF = 1,NFAM
               NFLAG = 2
               CALL MMUUR(AIN, NF, NT, NFLAG) 

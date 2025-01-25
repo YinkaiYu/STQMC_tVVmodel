@@ -27,26 +27,26 @@
           !          Kinetic.
           NF1 = NF
           
-          IF (NFLAG.EQ.2 .AND. RJ.GT.ZERO) THEN
+          IF (NFLAG.EQ.2 .AND. RV2.GT.ZERO) THEN ! V2 > 0, (ni - nj)
              DO I = 1,LFAM
-                I1 = L_Bonds(I,0  )
-                I2 = L_Bonds(I,nf1)
+                I1 = L_next(I,0  )
+                I2 = L_next(I,nf1)
                 !          Kenitic
                 DO J = 1,N
-                    A(J,I1) = A(J,I1) / DCMPLX(XSIGP2(NSIGL_K(I,Nf1,NTAU)),0.D0)
-                    A(J,I2) = A(J,I2) / DCMPLX(XSIGM2(NSIGL_K(I,Nf1,NTAU)),0.D0)
+                    A(J,I1) = A(J,I1) / DCMPLX(XSIGP2(NAUX_V2(I,Nf1,NTAU)),0.D0)
+                    A(J,I2) = A(J,I2) / DCMPLX(XSIGM2(NAUX_V2(I,Nf1,NTAU)),0.D0)
                 ENDDO
              ENDDO
           ENDIF
           
-          IF (NFLAG.EQ.2 .AND. RJ.LT.-ZERO) THEN
+          IF (NFLAG.EQ.1 .AND. RV1.LT.-ZERO) THEN ! V1 < 0, (ni + nj - 1)
              DO I = 1,LFAM
                 I1 = L_Bonds(I,0  )
                 I2 = L_Bonds(I,nf1)
                 !          Kenitic
                 DO J = 1,N
-                    A(J,I1) = A(J,I1) / DCMPLX(XSIGP2(NSIGL_K(I,Nf1,NTAU)),0.D0)
-                    A(J,I2) = A(J,I2) / DCMPLX(XSIGP2(NSIGL_K(I,Nf1,NTAU)),0.D0)
+                    A(J,I1) = A(J,I1) / DCMPLX(XSIGP1(NAUX_V1(I,Nf1,NTAU)),0.D0)
+                    A(J,I2) = A(J,I2) / DCMPLX(XSIGP1(NAUX_V1(I,Nf1,NTAU)),0.D0)
                 ENDDO
              ENDDO
           ENDIF

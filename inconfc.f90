@@ -27,8 +27,13 @@
                      do I = 1,LQ
                         do nf = 1,Nfam
                            X = RANF(ITMP)
-                           NSIGL_K(I,nf,NT) = 1
-                           IF (X.GT.0.5) NSIGL_K(I,nf,NT) = -1
+                           NAUX_V1(I,nf,NT) = 1
+                           IF (X.GT.0.5) NAUX_V1(I,nf,NT) = -1
+                        enddo
+                        do nf = 1,Nnext
+                           X = RANF(ITMP)
+                           NAUX_V2(I,nf,NT) = 1
+                           IF (X.GT.0.5) NAUX_V2(I,nf,NT) = -1
                         enddo
                      enddo
                      do I = 1,NDIM
@@ -41,7 +46,9 @@
                        & N,MPI_COMM_WORLD,IERR)
                   call MPI_SEND(NSIGL_U, Ndim*LTROT, MPI_INTEGER, N, &
                        & N+512, MPI_COMM_WORLD,IERR)
-                  call MPI_SEND(NSIGL_K, Nfam*LQ*LTROT, MPI_INTEGER, N, &
+                  call MPI_SEND(NAUX_V1, Nfam*LQ*LTROT, MPI_INTEGER, N, &
+                       & N+1024, MPI_COMM_WORLD, IERR)
+                  call MPI_SEND(NAUX_V2, Nnext*LQ*LTROT, MPI_INTEGER, N, &
                        & N+1024, MPI_COMM_WORLD, IERR)
                enddo
                ! Set node zero.
@@ -50,8 +57,13 @@
                   do I = 1,LQ
                      do nf = 1, Nfam
                         X = RANF(ISEED)
-                        NSIGL_K(I,nf,NT) = 1
-                        if (X.GT.0.5) NSIGL_K(I,nf,NT) = -1
+                        NAUX_V1(I,nf,NT) = 1
+                        if (X.GT.0.5) NAUX_V1(I,nf,NT) = -1
+                     enddo
+                     do nf = 1, Nnext
+                        X = RANF(ISEED)
+                        NAUX_V2(I,nf,NT) = 1
+                        if (X.GT.0.5) NAUX_V2(I,nf,NT) = -1
                      enddo
                   enddo
                   do i = 1,NDIM
@@ -69,7 +81,10 @@
                   enddo
                   do i = 1,LQ
                       do nf = 1, NFAM
-                          Read(30,*) NSIGL_K(I,nf,NT)
+                          Read(30,*) NAUX_V1(I,nf,NT)
+                      enddo
+                      do nf = 1, Nnext
+                          Read(30,*) NAUX_V2(I,nf,NT)
                       enddo
                   enddo
                enddo
@@ -98,7 +113,9 @@
                  & IRANK , MPI_COMM_WORLD,STATUS,IERR)
             call MPI_RECV(NSIGL_U, NDIM*LTROT, MPI_INTEGER,0, &
                  & IRANK + 512, MPI_COMM_WORLD,STATUS,IERR)
-            call MPI_RECV(NSIGL_K, Nfam*LQ*LTROT, MPI_INTEGER,0, &
+            call MPI_RECV(NAUX_V1, Nfam*LQ*LTROT, MPI_INTEGER,0, &
+                 & IRANK + 1024, MPI_COMM_WORLD,STATUS,IERR)
+            call MPI_RECV(NAUX_V2, Nnext*LQ*LTROT, MPI_INTEGER,0, &
                  & IRANK + 1024, MPI_COMM_WORLD,STATUS,IERR)
          endif
          if (IRANK .EQ. 0 ) then

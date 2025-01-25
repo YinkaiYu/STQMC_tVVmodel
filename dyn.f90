@@ -106,7 +106,7 @@
            CALL OBSERT (NTAU1,GT0UP,G0TUP, GTTUP,G00UP)
            ! Wrap UR.
            CALL MMTHR(UR)
-            If (RJ > Zero) then
+            If (RV1 > Zero) then
               DO NF = 1,NFAM
                  NFLAG = 2
                  CALL MMUUR(UR, NF, NT1, NFLAG)

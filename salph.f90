@@ -21,22 +21,32 @@
           NFLIPL( 1) =  -1
           
           ! V1 < 0 
-          ALPHA  =  acosh(exp(-RJ*dtau/2.d0))
+          ALPHA1  =  acosh(exp(-RV1*dtau/2.d0))
           
-          ! Same for current and for kinetic.
-          XSIGP2(-1) = EXP( 1.D0* ALPHA * dble(-1))
-          XSIGP2( 1) = EXP( 1.D0* ALPHA * dble(1) )
+          XSIGP1(-1) = EXP( 1.D0* ALPHA1 * dble(-1))
+          XSIGP1( 1) = EXP( 1.D0* ALPHA1 * dble(1) )
           
-          XSIGM2(-1) = EXP(-1.D0* ALPHA * dble(-1))
-          XSIGM2( 1) = EXP(-1.D0* ALPHA * dble(1) )
+          XSIGM1(-1) = EXP(-1.D0* ALPHA1 * dble(-1))
+          XSIGM1( 1) = EXP(-1.D0* ALPHA1 * dble(1) )
+          
+          ! V2 > 0 
+          ALPHA2  =  acosh(exp(RV2*dtau/2.d0))
+          
+          XSIGP2(-1) = EXP( 1.D0* ALPHA2 * dble(-1))
+          XSIGP2( 1) = EXP( 1.D0* ALPHA2 * dble(1) )
+          
+          XSIGM2(-1) = EXP(-1.D0* ALPHA2 * dble(-1))
+          XSIGM2( 1) = EXP(-1.D0* ALPHA2 * dble(1) )
           
           DO NL = -1,1
              IF (NL.NE.0) THEN
                  IF(NL==1) NLN = -1
                  IF(NL==-1) NLN = 1
+                 DELLP1(NL) =  (XSIGP1(NLN)/XSIGP1(NL)) - 1.D0
+                 DELLM1(NL) =  (XSIGM1(NLN)/XSIGM1(NL)) - 1.D0                 
+                 ratio_const(NL) = EXP(-1.D0* ALPHA1 * dble(NLN - NL) ) ! for V1 < 0
                  DELLP2(NL) =  (XSIGP2(NLN)/XSIGP2(NL)) - 1.D0
-                 DELLM2(NL) =  (XSIGM2(NLN)/XSIGM2(NL)) - 1.D0                  
-                 ratio_const(NL) = EXP(-1.D0* ALPHA * dble(NLN - NL) )
+                 DELLM2(NL) =  (XSIGM2(NLN)/XSIGM2(NL)) - 1.D0     
              ENDIF
           ENDDO
           
