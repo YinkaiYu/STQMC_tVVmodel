@@ -34,23 +34,25 @@ This framework represents a significant advancement in tackling the fermion sign
 
 ## Subroutine Introduction
 
-### SuNf: main subroutine of Short-Time QMC
+### main subroutine of Short-Time QMC
 
-#### Variable Definitions
+- `SuNF`: main subroutine of Short-Time QMC
+
+### Variable Definitions
 - `blockc`: define and allocate variables.
 - `block_obs`: define and allocate observables.
 - `salph`: define and assign values to intermediate variables.
 
-#### Set Up Hopping
+### Set Up Hopping
 - `sli`: define functions related to lattice structure.
 - `setH`: set up the hopping matrix.
 - `sthop`: set up the exponential of the hopping matrix.
 
-#### Field Updates
+### Field Updates
 - `upgradeU`: update auxiliary field for Hubbard interaction.
 - `upgradeV`: update auxiliary field for V interaction.
 
-#### Matrix Operations
+### Matrix Operations
 - `mmuur`: multiply UR matrix by interaction trotter exponential.
 - `mmthr`: multiply UR matrix by hopping trotter exponential.
 - `mmuul`: multiply UL matrix by interaction trotter exponential.
@@ -60,14 +62,14 @@ This framework represents a significant advancement in tackling the fermion sign
 - `mmuulm1`: divide UL matrix by interaction trotter exponential.
 - `mmthlm1`: divide UL matrix by hopping trotter exponential.
 
-#### Stabilization
+### Stabilization
 - `ortho`: perform SVD orthogonalization of UR matrix.
 
-#### Time-Dependent Measurements
+### Time-Dependent Measurements
 - `dyn`: compute time-dependent single-particle Green's function.
 - `propr`, `proprm1`: propagate Green's function from τ to τ+1.
 
-#### Measurement and Output
+### Measurement and Output
 - `calcgr`: calculate equal-time single-particle Green's function.
 - `obser`: evaluate equal-time observables.
 - `obsert`: evaluate unequal-time observables.
