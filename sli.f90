@@ -47,18 +47,17 @@
          enddo
 	
 !define the next nearest neighbor interaction
-         do ly = 1, NLY
-            do lx = 1, NLX               
-                ll = invlist(lx,ly)
-                L_next(ll,0) = invnlist(lx,ly,1,1)
-                L_next(ll,1) = invnlist(npbcx(lx+1),ly,1,1)
-                L_next(ll,2) = invnlist(lx,npbcy(ly+1),1,1)
-                L_next(ll,3) = invnlist(npbcx(lx-1),npbcy(ly+1),1,1)
-                L_next(ll,4) = invnlist(npbcx(lx-1),ly,1,1)
-                L_next(ll,5) = invnlist(lx,npbcy(ly-1),1,1)
-                L_next(ll,6) = invnlist(npbcx(lx+1),npbcy(ly-1),1,1)
+        do no = 1, Norb
+            do ly = 1, NLY
+                do lx = 1, NLX               
+                    ll = invlist(lx,ly)
+                    L_next(ll,no,0) = invnlist(lx,ly,no,1)
+                    L_next(ll,no,1) = invnlist(npbcx(lx+1),ly,no,1)
+                    L_next(ll,no,2) = invnlist(lx,npbcy(ly+1),no,1)
+                    L_next(ll,no,3) = invnlist(npbcx(lx-1),npbcy(ly+1),no,1)
+                enddo
             enddo
-         enddo
+        enddo
 
 ! define the unite matrix
         ZKRON = DCMPLX(0.D0,0.D0)

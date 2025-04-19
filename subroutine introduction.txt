@@ -13,8 +13,8 @@
 ** sthop: set up exponential hopping matrix
 
 #update:
-** upgradeU: update auxiliary field of Hubbard interaction.
-** upgradeV: update auxiliary field of V interaction.
+** upgradeV1: update auxiliary field of V1 interaction.
+** upgradeV2: update auxiliary field of V2 interaction.
 
 #matrix operatoration:
 ** mmuur: multiply UR matrix by interaction trotter exponential matrix

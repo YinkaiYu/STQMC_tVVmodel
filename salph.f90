@@ -67,19 +67,5 @@
              ENDDO
           ENDDO
           
-          !****** For Hubbard.
-          ALPHA_U = dcmplx(acosh(exp(RHUB*dtau/2.0)),0.d0)
-
-          XSIGMA_U(-1) = EXP(ALPHA_U*dcmplx(-1.d0,0.d0))
-          XSIGMA_U( 1) = EXP(ALPHA_U*dcmplx(1.d0,0.d0))
-          
-          RHO = 0.5
-          DO NL = -1,1
-             IF (NL.NE.0) THEN
-                   NLN = NFLIPL(NL)
-                   DELTA_U(NL)=(XSIGMA_U(NLN)/XSIGMA_U(NL)) -  DCMPLX(1.D0,0.D0)
-             ENDIF
-          ENDDO
-          
           RETURN
         END SUBROUTINE SALPH

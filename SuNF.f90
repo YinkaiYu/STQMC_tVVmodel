@@ -39,10 +39,6 @@
         COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
         complex(kind=8) :: phase
       END SUBROUTINE obser
-      SUBROUTINE UPGRADEU(NTAU,ISEED,  UL,UR, ULRINV)
-        COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
-        INTEGER :: NTAU, ISEED
-      END SUBROUTINE UPGRADEU
       SUBROUTINE upgradeV(NTAU,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
         COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
         complex (kind=8) :: phase
@@ -82,7 +78,7 @@
    IF (IRANK == 0) THEN
       OPEN (UNIT=50,FILE='info',STATUS='UNKNOWN')
       OPEN ( UNIT=20, FILE='paramC_sets',STATUS='UNKNOWN' )
-      READ(20,*) BETA, LTROT, NWRAP, RT1, RHUB,  RV1, RV2
+      READ(20,*) BETA, LTROT, NWRAP, RT1, RV1, RV2
       READ(20,*) NBIN, NSWEEP, LTAU, NTDM
       READ(20,*) NLX, NLY, Itwist, TwistX, N_SUN, NE
       CLOSE(20)
@@ -92,7 +88,6 @@
    CALL MPI_BCAST(BETA ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(RV1 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(RV2 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
-   CALL MPI_BCAST(RHUB ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(RT1 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(Itwist ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(TwistX ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
@@ -125,7 +120,6 @@
       WRITE(50,*) 'Hopping t        :',RT1
       WRITE(50,*) 'V1 < 0           :',RV1
       WRITE(50,*) 'V2 > 0           :',RV2
-      WRITE(50,*) 'Hubbard          :',RHUB
       WRITE(50,*) 'Theta            :',BETA
       WRITE(50,*) 'Trotter number   :',LTROT
       WRITE(50,*) '=>Dtau           :',DTAU
@@ -191,10 +185,6 @@
                CALL MMUUR(UR, NF, NT, NFLAG)
             ENDDO
          ENDIF
-         if(abs(RHUB)>zero) then
-            NFLAG = 3 ! Hubbard
-            CALL MMUUR(UR, NF, NT, NFLAG)
-         endif
          IF (MOD(NT,NWRAP) == 0) THEN
             CALL ORTHO(UR,NCON)
             ! Write in Store (NT,NF+1) with ortho.
@@ -270,8 +260,6 @@
                      ENDDO
                   ENDDO
                ENDIF
-               ! Update Auxiliary field for Hubbard U
-               IF (abs(RHUB) > ZERO) CALL UPGRADEU(NT,ISEED, UL,UR, ULRINV)
                ! Compute observables
                ! IF (NT >= NME_ST .AND. NT <= NME_EN) THEN
                IF ( NT == LTROT/2 ) THEN
@@ -279,11 +267,6 @@
                   NOBS = NOBS + 1
                ENDIF
                ! Propagate UL and UR by multiplying U-matrix
-               if(abs(RHUB)>zero) then
-                  NFLAG = 3 ! Hubbard
-                  CALL MMUUL ( UL,NF,NT,NFLAG )
-                  CALL MMUURM1( UR,NF,NT,NFLAG )
-               endif
                if (abs(RV2) > Zero) THEN
                   DO NF = Nnext,1,-1
                      NFLAG = 2
@@ -340,12 +323,6 @@
                      CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
                   ENDDO
                ENDIF
-               if(abs(RHUB)>zero) then
-                  NFLAG = 3 ! Hubbard
-                  CALL MMUUR (UR, NF, NT, NFLAG)
-                  CALL MMUULM1(UL, NF, NT, NFLAG)
-               endif
-               IF (abs(RHUB) > ZERO) CALL UPGRADEU(NT,ISEED, UL,UR, ULRINV)
                ! IF (NT >= NME_ST .AND. NT <= NME_EN) THEN
                IF ( NT == LTROT/2 ) THEN
                   Call OBSER(UL,UR,ULRINV,phase)

@@ -39,13 +39,6 @@
            DEL55   =  DELLP1( NAUX_V1(I,NF1,NTAU) )
        ENDIF
 
-       if( NFLAG == 2 ) then ! V2 > 0, (ni - nj)
-           I4 = L_next(I,0   ) 
-           I5 = L_next(I,NF1 ) 
-           DEL44   =  DELLP2( NAUX_V2(I,NF1,NTAU) )   
-           DEL55   =  DELLM2( NAUX_V2(I,NF1,NTAU) )  
-       ENDIF
-
 	   G44UP = CMPLX(0.D0,0.D0)
 	   G45UP = CMPLX(0.D0,0.D0)
 	   G54UP = CMPLX(0.D0,0.D0)
@@ -86,10 +79,6 @@
 
        if( NFLAG == 1 ) then ! V1 < 0, (ni + nj - 1)
            RATIOtot =    RATIOUP  * ratio_const(NAUX_V1(I,NF1,NTAU))
-       ENDIF
-
-       if( NFLAG == 2 ) then ! V2 > 0, (ni - nj)
-           RATIOtot =    RATIOUP
        ENDIF
 
 
@@ -146,9 +135,6 @@
               !	      Flip:
               if( NFLAG == 1 ) then ! V1 < 0, (ni + nj - 1)
                 NAUX_V1(I,Nf1,NTAU) = - NAUX_V1(I,Nf1,NTAU)    
-              endif
-              if( NFLAG == 2 ) then ! V2 > 0, (ni - nj)
-                NAUX_V2(I,Nf1,NTAU) = - NAUX_V2(I,Nf1,NTAU)    
               endif
        endif
     ENDDO

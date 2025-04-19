@@ -26,6 +26,27 @@
         CALL CALCGR( UL, UR, ULRINV, GRUP, GRUPC)
         !GRUP (I,J) = <c_i c^+_j >
         !GRUPC (I,J) = <c^+_i c_j >
+
+! QAH & CM
+        ! i_sublattice   = 1
+        ! i_NNNdirection = 1
+        ! j_sublattice   = 1
+        ! j_NNNdirection = 1
+        ! do ix = 1, nlx
+        !     do  iy = 1, nly
+        !         do jx = 1, nlx
+        !             do jy = 1, nly
+        !                 ii_0 = invnlist(ix,iy,i_sublattice,1)
+        !                 jj_0 = invnlist(jx,jy,j_sublattice,1)
+        !                 ii_n = 
+        !                 imj_x = ix-jx
+        !                 imj_y = iy-jy
+        !             enddo
+        !         enddo
+        !     enddo
+        ! enddo
+
+! old observables
         
         do ii = 1, LQ
             i_0 = L_bonds(ii,0) 

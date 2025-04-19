@@ -16,27 +16,22 @@
 
           N = Size(A,1)
           Allocate (V1(N),V2(N))
-          IF (NFLAG.EQ.3.and.RHUB.GT.zero) THEN
-             DO NL = 1,N
-                DO J  = 1,Ndim
-                   A(NL,J) = A(NL,J) /  XSIGMA_U(NSIGL_U(J,NTAU))
-                ENDDO
-             ENDDO
-          ENDIF
 
           !          Kinetic.
           NF1 = NF
           
           IF (NFLAG.EQ.2 .AND. RV2.GT.ZERO) THEN ! V2 > 0, (ni - nj)
-             DO I = 1,LFAM
-                I1 = L_next(I,0  )
-                I2 = L_next(I,nf1)
-                !          Kenitic
-                DO J = 1,N
-                    A(J,I1) = A(J,I1) / DCMPLX(XSIGP2(NAUX_V2(I,Nf1,NTAU)),0.D0)
-                    A(J,I2) = A(J,I2) / DCMPLX(XSIGM2(NAUX_V2(I,Nf1,NTAU)),0.D0)
-                ENDDO
-             ENDDO
+            do no = 1, Norb
+               DO I = 1,LFAM
+                  I1 = L_next(I,no,0  )
+                  I2 = L_next(I,no,nf1)
+                  !          Kenitic
+                  DO J = 1,N
+                     A(J,I1) = A(J,I1) / DCMPLX(XSIGP2(NAUX_V2(I,Nf1,NTAU)),0.D0)
+                     A(J,I2) = A(J,I2) / DCMPLX(XSIGM2(NAUX_V2(I,Nf1,NTAU)),0.D0)
+                  ENDDO
+               ENDDO
+            enddo
           ENDIF
           
           IF (NFLAG.EQ.1 .AND. RV1.LT.-ZERO) THEN ! V1 < 0, (ni + nj - 1)

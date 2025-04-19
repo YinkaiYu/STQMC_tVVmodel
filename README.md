@@ -49,8 +49,8 @@ This framework represents a significant advancement in tackling the fermion sign
 - `sthop`: set up the exponential of the hopping matrix.
 
 ### Field Updates
-- `upgradeU`: update auxiliary field for Hubbard interaction.
-- `upgradeV`: update auxiliary field for V interaction.
+- `upgradeV1`: update auxiliary field for V1 interaction.
+- `upgradeV2`: update auxiliary field for V2 interaction.
 
 ### Matrix Operations
 - `mmuur`: multiply UR matrix by interaction trotter exponential.

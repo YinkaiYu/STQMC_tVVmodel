@@ -3,7 +3,7 @@
 !!        Use Lattices_v3
 
 
-        Real (Kind=8),save :: BETA , RV1, RV2, RHUB,  RT1, DTAU, PI,  TwistX
+        Real (Kind=8),save :: BETA , RV1, RV2, RT1, DTAU, PI,  TwistX
         Integer,      save :: LTROT, NWRAP, N_SUN, NBIN, NSWEEP,  NORB, NORB1, NDIM, LTAU,  &
              &                LFAM, NFAM, Nbond, Nnext, nspin, LQ, NLX, NLY, NE, Itwist
         real(kind=8), DIMENSION(:), save :: a1_p(2), a2_p(2), b1_p(2), b2_p(2)
@@ -48,14 +48,14 @@
           NORB1 = 2
           LQ   = NLX * NLY  
           NDIM = Norb*LQ
-          NFAM   = 3  ! * 2 for current and for kenetic terms.
+          NFAM   = 3 ! nearest neighbors for honeycomb: 3 A->B
           LFAM   = LQ
           Nbond = NFam
-          Nnext = 6  ! next nearest neighbors for honeycomb
+          Nnext = 3  ! next nearest neighbors for honeycomb: 3 A->A or B->B
           nspin = 1
           DTAU   = BETA/DBLE(LTROT)
           
-          Allocate( L_Bonds(LQ,0:Nbond), L_next(LQ,0:Nnext), list(LQ,2), invlist(NLX,NLY), nlist(Ndim, 4), invnlist(NLX,NLY,norb,nspin), &
+          Allocate( L_Bonds(LQ,0:Nbond), L_next(LQ,Norb,0:Nnext), list(LQ,2), invlist(NLX,NLY), nlist(Ndim, 4), invnlist(NLX,NLY,norb,nspin), &
                &    NAUX_V1(LQ,Nfam,LTROT), NAUX_V2(LQ,Nnext,LTROT), NSIGL_U(NDIM,LTROT), Lattimj(LQ,LQ)  )
           Allocate ( PROJ(NDIM,NDIM),   ZKRON(NDIM,NDIM) ) 
           Allocate ( URT_tot(NDIM,NDIM), URTM1_tot(NDIM,NDIM) )
