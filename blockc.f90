@@ -1,7 +1,12 @@
       Module  Blockc 
         
 !!        Use Lattices_v3
-
+          interface
+               function ranf(iseed) result(r)
+                    integer, intent(in) :: iseed
+                    real(8) :: r
+               end function ranf
+          end interface
 
         Real (Kind=8),save :: BETA , RV1, RV2, RT1, DTAU, PI,  TwistX
         Integer,      save :: LTROT, NWRAP, N_SUN, NBIN, NSWEEP,  NORB, NORB1, NDIM, LTAU,  &
@@ -10,7 +15,8 @@
 
         Integer,  Dimension(:,:), Allocatable, Save :: list(:,:), invlist(:,:), nlist(:,:), invnlist(:,:,:,:)
         Integer,  dimension(:,:), allocatable, save :: lattimj(:,:)
-	    INTEGER,  Dimension(:,:), Allocatable, Save :: L_bonds, L_next, NSIGL_U
+	     INTEGER,  Dimension(:,:), Allocatable, Save :: L_bonds, NSIGL_U
+	     INTEGER,  Dimension(:,:,:), Allocatable, Save :: L_next
         INTEGER,  Dimension(:,:,:), Allocatable, Save :: NAUX_V1, NAUX_V2
         INTEGER,  Save ::  NFLIPL(-1:1)
         

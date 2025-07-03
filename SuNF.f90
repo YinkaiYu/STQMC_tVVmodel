@@ -39,11 +39,16 @@
         COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
         complex(kind=8) :: phase
       END SUBROUTINE obser
-      SUBROUTINE upgradeV(NTAU,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
+      SUBROUTINE upgradeV1(NTAU,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
         COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
         complex (kind=8) :: phase
         Integer :: NTAU,NF,ISEED,NFLAG
-      END SUBROUTINE upgradeV
+      END SUBROUTINE upgradeV1
+      SUBROUTINE upgradeV2(NTAU,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
+        COMPLEX (Kind=8), Dimension(:,:) :: UL, UR, ULRINV
+        complex (kind=8) :: phase
+        Integer :: NTAU,NF,ISEED,NFLAG
+      END SUBROUTINE upgradeV2
       SUBROUTINE MMTHR(A)
         COMPLEX (Kind=8), Dimension(:,:) :: A
       END SUBROUTINE MMTHR
@@ -270,7 +275,7 @@
                if (abs(RV2) > Zero) THEN
                   DO NF = Nnext,1,-1
                      NFLAG = 2
-                     CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
+                     CALL upgradeV2(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
                      CALL MMUUL (UL,NF,NT,NFLAG)
                      CALL MMUURM1(UR,NF,NT,NFLAG)
                   ENDDO
@@ -278,7 +283,7 @@
                if (abs(RV1) > Zero) THEN
                   DO NF = NFAM,1,-1
                      NFLAG = 1
-                     CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
+                     CALL upgradeV1(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
                      CALL MMUUL (UL,NF,NT,NFLAG)
                      CALL MMUURM1(UR,NF,NT,NFLAG)
                   ENDDO
@@ -312,7 +317,7 @@
                      NFLAG = 1
                      CALL MMUUR (UR, NF, NT, NFLAG)
                      CALL MMUULM1 (UL, NF, NT, NFLAG)
-                     CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
+                     CALL upgradeV1(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
                   ENDDO
                ENDIF
                IF (abs(RV2) > Zero) THEN
@@ -320,7 +325,7 @@
                      NFLAG = 2
                      CALL MMUUR (UR, NF, NT, NFLAG)
                      CALL MMUULM1 (UL, NF, NT, NFLAG)
-                     CALL upgradeV(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
+                     CALL upgradeV2(NT,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)
                   ENDDO
                ENDIF
                ! IF (NT >= NME_ST .AND. NT <= NME_EN) THEN

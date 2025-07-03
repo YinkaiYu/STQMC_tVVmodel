@@ -1,4 +1,4 @@
-    SUBROUTINE upgradeV(NTAU,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)     
+    SUBROUTINE upgradeV2(NTAU,NF,ISEED,UL,UR,ULRINV,phase,NFLAG)     
     
     Use Blockc
     Use Block_obs
@@ -145,4 +145,4 @@
     
     Deallocate (VEC1, VEC2,VHLP1, UHLP1, VHLP2, UHLP2,V1, V2, U1, U2 )
 	 
-END SUBROUTINE upgradeV
+END SUBROUTINE upgradeV2
