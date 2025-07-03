@@ -36,8 +36,8 @@
             if( NFLAG == 2 ) then ! V2 > 0, (ni - nj)
                 I4 = L_next(I,no,0   ) 
                 I5 = L_next(I,no,NF1 ) 
-                DEL44   =  DELLP2( NAUX_V2(I,NF1,NTAU) )   
-                DEL55   =  DELLM2( NAUX_V2(I,NF1,NTAU) )  
+                DEL44   =  DELLP2( NAUX_V2(I,no,NF1,NTAU) )   
+                DEL55   =  DELLM2( NAUX_V2(I,no,NF1,NTAU) )  
             ENDIF
 
             G44UP = CMPLX(0.D0,0.D0)
@@ -135,7 +135,7 @@
                     ENDDO
                     !	      Flip:
                     if( NFLAG == 2 ) then ! V2 > 0, (ni - nj)
-                        NAUX_V2(I,Nf1,NTAU) = - NAUX_V2(I,Nf1,NTAU)    
+                        NAUX_V2(I,no,Nf1,NTAU) = - NAUX_V2(I,no,Nf1,NTAU)    
                     endif
             endif
         ENDDO

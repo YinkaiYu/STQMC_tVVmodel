@@ -15,9 +15,10 @@
 
         Integer,  Dimension(:,:), Allocatable, Save :: list(:,:), invlist(:,:), nlist(:,:), invnlist(:,:,:,:)
         Integer,  dimension(:,:), allocatable, save :: lattimj(:,:)
-	     INTEGER,  Dimension(:,:), Allocatable, Save :: L_bonds, NSIGL_U
+	     INTEGER,  Dimension(:,:), Allocatable, Save :: L_bonds
 	     INTEGER,  Dimension(:,:,:), Allocatable, Save :: L_next
-        INTEGER,  Dimension(:,:,:), Allocatable, Save :: NAUX_V1, NAUX_V2
+        INTEGER,  Dimension(:,:,:), Allocatable, Save :: NAUX_V1
+        INTEGER,  Dimension(:,:,:,:), Allocatable, Save :: NAUX_V2
         INTEGER,  Save ::  NFLIPL(-1:1)
         
         COMPLEX (Kind=8), Dimension(:,:),   Allocatable, Save ::  PROJ, ZKRON
@@ -62,7 +63,7 @@
           DTAU   = BETA/DBLE(LTROT)
           
           Allocate( L_Bonds(LQ,0:Nbond), L_next(LQ,Norb,0:Nnext), list(LQ,2), invlist(NLX,NLY), nlist(Ndim, 4), invnlist(NLX,NLY,norb,nspin), &
-               &    NAUX_V1(LQ,Nfam,LTROT), NAUX_V2(LQ,Nnext,LTROT), NSIGL_U(NDIM,LTROT), Lattimj(LQ,LQ)  )
+               &    NAUX_V1(LQ,Nfam,LTROT), NAUX_V2(LQ,Norb,Nnext,LTROT), Lattimj(LQ,LQ)  )
           Allocate ( PROJ(NDIM,NDIM),   ZKRON(NDIM,NDIM) ) 
           Allocate ( URT_tot(NDIM,NDIM), URTM1_tot(NDIM,NDIM) )
 

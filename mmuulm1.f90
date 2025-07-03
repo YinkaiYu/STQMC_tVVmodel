@@ -22,13 +22,13 @@
           
           IF (NFLAG.EQ.2 .AND. RV2.GT.ZERO) THEN ! V2 > 0, (ni - nj)
             do no = 1, Norb
-               DO I = 1,LFAM
+               DO I = 1,LQ
                   I1 = L_next(I,no,0  )
                   I2 = L_next(I,no,nf1)
                   !          Kenitic
                   DO J = 1,N
-                     A(J,I1) = A(J,I1) / DCMPLX(XSIGP2(NAUX_V2(I,Nf1,NTAU)),0.D0)
-                     A(J,I2) = A(J,I2) / DCMPLX(XSIGM2(NAUX_V2(I,Nf1,NTAU)),0.D0)
+                     A(J,I1) = A(J,I1) / DCMPLX(XSIGP2(NAUX_V2(I,no,nf1,NTAU)),0.D0)
+                     A(J,I2) = A(J,I2) / DCMPLX(XSIGM2(NAUX_V2(I,no,nf1,NTAU)),0.D0)
                   ENDDO
                ENDDO
             enddo

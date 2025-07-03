@@ -24,7 +24,6 @@ SUBROUTINE STHOP
         i_0 = L_Bonds(i,0)
         do nf = 1,Nbond
             i_n = L_Bonds(i,nf)
-            random = ranf(IseedHop)
             Z1 = CMPLX(-RT1,0.D0)
             HLP2(i_0,i_n)  =  Z1
             HLP2(i_n,i_0)  = conjg(Z1)
@@ -37,10 +36,10 @@ SUBROUTINE STHOP
             Z1 = DCMPLX(0.D0,0.D0)
             DO M = 1,Ndim
                 Z0 = Z0 +  HLP1(I,M) * &
-                &   DCMPLX(EXP(-DTAU *WC(M)),0.D0) * &
+                &   DCMPLX(EXP(-0.5*DTAU *WC(M)),0.D0) * &
                 &    DCONJG(HLP1(J,M))
                 Z1 = Z1 +  HLP1(I,M)  *&
-                &  DCMPLX(EXP( DTAU *WC(M)),0.D0) * &
+                &  DCMPLX(EXP( 0.5*DTAU *WC(M)),0.D0) * &
                 &   DCONJG(HLP1(J,M))
             ENDDO
             URT_tot  (I,J) = Z0

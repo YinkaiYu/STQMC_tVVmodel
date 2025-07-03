@@ -21,13 +21,13 @@
           
           IF (NFLAG.EQ.2 .AND. RV2 .GT. ZERO) THEN ! V2 > 0, (ni - nj)
             do no = 1, Norb
-               DO I = 1,LFAM
+               DO I = 1,LQ
                   I1 = L_next(I,no,0  )
                   I2 = L_next(I,no,nf1)
                   ! Kinetic 
                   DO J = 1,N
-                     A(I1,J) =  A(I1,J) / DCMPLX(XSIGP2(NAUX_V2(I,Nf1,NTAU)),0.D0)   
-                     A(I2,J) =  A(I2,J) / DCMPLX(XSIGM2(NAUX_V2(I,Nf1,NTAU)),0.D0)
+                     A(I1,J) =  A(I1,J) / DCMPLX(XSIGP2(NAUX_V2(I,no,nf1,NTAU)),0.D0)   
+                     A(I2,J) =  A(I2,J) / DCMPLX(XSIGM2(NAUX_V2(I,no,nf1,NTAU)),0.D0)
                   ENDDO
                ENDDO
             enddo

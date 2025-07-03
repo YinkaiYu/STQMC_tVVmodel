@@ -170,11 +170,7 @@
    CALL SYSTEM_CLOCK(COUNT_RATE=N_P_SEC)
    CALL SYSTEM_CLOCK(COUNT=ICPU_1)
 !-------Fill up right storage and set the phase.
-   DO NL = 1,NE
-      DO I = 1,Ndim
-         UR(I,NL) = PROJ(I,NL)
-      ENDDO
-   ENDDO
+   UR(1:Ndim,1:NE) = PROJ(1:Ndim,1:NE)
    if ( LTROT > 0 ) then
       DO NT = 1,LTROT
          CALL MMTHR(UR)
@@ -200,6 +196,7 @@
                ENDDO
             ENDDO
          ENDIF
+         CALL MMTHR(UR)  ! symmetric, with (1/2) in sthop
       ENDDO
    end if
 ! UR is now on time slice LTROT.
@@ -238,12 +235,15 @@
             ENDDO
          ENDDO
          CALL ORTHO(UR,NCON)
+         CALL ORTHO(UL,NCON)
          CALL MMULT(ULR,UL,UR)
          CALL INV (ULR,ULRINV,DET1)
          phase = det1(1)/abs(det1(1))
          if ( LTROT > 0 ) then
             DO NT = LTROT, 1, -1
             ! UR, UL on time slice Ltrot.
+               CALL MMTHRM1(UR)  ! symmetric, with (1/2) in sthop
+               CALL MMTHL(UL)    ! symmetric, with (1/2) in sthop
                IF (MOD(NT,NWRAP) == 0 ) THEN
                   ! Read UR.
                   NT_ST = NT/NWRAP
@@ -270,6 +270,10 @@
                IF ( NT == LTROT/2 ) THEN
                   Call OBSER(UL,UR,ULRINV,phase)
                   NOBS = NOBS + 1
+                  if ( abs(RV1)<Zero .and. abs(RV2)<Zero ) then
+                     phasetot = phasetot + real(phase)
+                     ncount = ncount + 1
+                  endif
                ENDIF
                ! Propagate UL and UR by multiplying U-matrix
                if (abs(RV2) > Zero) THEN
@@ -288,7 +292,6 @@
                      CALL MMUURM1(UR,NF,NT,NFLAG)
                   ENDDO
                endif
-         
                CALL MMTHL (UL)
                CALL MMTHRM1(UR)
             ENDDO
@@ -302,6 +305,7 @@
 
       ! Set UR, UST is full with left propagations. UL is on time slice 0.
          UR(1:Ndim,1:NE) = PROJ(1:Ndim,1:NE)
+         CALL ORTHO(UR,NCON)
          CALL ORTHO(UL,NCON)
          CALL MMULT(ULR,UL,UR)
          CALL INV (ULR,ULRINV,DET1)
@@ -311,7 +315,6 @@
             ! You start the loop on time slice NT-1
                CALL MMTHR (UR)
                CALL MMTHLM1(UL)
-         
                IF (abs(RV1) > Zero) THEN
                   DO NF = 1,NFAM
                      NFLAG = 1
@@ -332,6 +335,10 @@
                IF ( NT == LTROT/2 ) THEN
                   Call OBSER(UL,UR,ULRINV,phase)
                   NOBS = NOBS + 1
+                  if ( abs(RV1)<Zero .and. abs(RV2)<Zero ) then
+                     phasetot = phasetot + real(phase)
+                     ncount = ncount + 1
+                  endif
                ENDIF
                IF (MOD(NT,NWRAP) == 0) THEN
                   NT_ST = NT/NWRAP
@@ -359,13 +366,11 @@
                   CALL DYN(UST,  UL_1, UR_1, ULR,ULRINV_1, XMEAN_DYN, XMAX_DYN)
                   NOBST = NOBST + 1
                ENDIF
+               CALL MMTHLM1(UL)  ! symmetric, with (1/2) in sthop
+               CALL MMTHR (UR)   ! symmetric, with (1/2) in sthop
             ENDDO
          else
-         ! LTROT == 0:  initial state, directly observe
-            CALL ORTHO(UR,NCON)
-            CALL MMULT(ULR,UL,UR)
-            CALL INV (ULR,ULRINV,DET1)
-            phase = det1(1)/abs(det1(1))      
+         ! LTROT == 0:  initial state, directly observe    
             Call OBSER(UL,UR,ULRINV,phase)
             NOBS = NOBS + 1
             phasetot = phasetot + real(phase)
