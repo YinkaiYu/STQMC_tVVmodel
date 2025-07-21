@@ -1,4 +1,5 @@
 FC = mpiifort
+# FLAGS = -c -g -check bounds -check pointer -check uninit -traceback
 FLAGS = -c -O3
 SUFFIX = 
 LF = -warn all

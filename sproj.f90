@@ -55,6 +55,18 @@ SUBROUTINE SPROJ(DEGEN,EN_FREE)
          TMP(ii_B,ii_B) = CMPLX( -R1, 0.d0)
       enddo
    endif
+   if (Itwist == -3) then ! CM
+      do ix = 1, NLX
+         do iy = 1, NLY
+            do no = 1, Norb
+               ii = invnlist(ix,iy,no,1)
+               R1 = -0.25d0 * (-1.0d0)**dble(no)
+               if (MOD(ix-iy,3)==0) R1 = -2.0d0 * R1
+               TMP(ii,ii) = CMPLX( R1, 0.d0)
+            enddo
+         enddo
+      enddo
+   endif
    CALL Diag(TMP,PROJ,WC)
    en_free = 0.d0
    do i = 1,Ne

@@ -89,54 +89,54 @@
     !    write(6,*) 'RATIO_RE_ABS', RATIO_RE_ABS
         
            
-       IF (RATIO_RE_ABS.GT.Random) THEN  
-           ! WRITE(50,*) 'Accepted'   
-           ! Upgrade the inverse
-              ACCM = ACCM + 1.D0
-              WEIGHT = SQRT(DBLE(RATIOTOT*DCONJG(RATIOTOT)))
-              phase = phase* ratiotot/dcmplx(weight,0.d0)
-              phasetot = phasetot + real(phase)
-              ncount = ncount + 1
-              
-              DO NL  = 1,NE
-                  DO NL1 = 1,NE
-                      U1(NL) = U1(NL) + ULRINV(NL,NL1)*UHLP1(NL1)
-                      U2(NL) = U2(NL) + ULRINV(NL,NL1)*UHLP2(NL1)
-                  ENDDO
-              ENDDO
+        IF (RATIO_RE_ABS.GT.Random) THEN  
+            ! WRITE(50,*) 'Accepted'   
+            ! Upgrade the inverse
+            ACCM = ACCM + 1.D0
+            
+            DO NL  = 1,NE
+                DO NL1 = 1,NE
+                    U1(NL) = U1(NL) + ULRINV(NL,NL1)*UHLP1(NL1)
+                    U2(NL) = U2(NL) + ULRINV(NL,NL1)*UHLP2(NL1)
+                ENDDO
+            ENDDO
 
-              Z1 =  CMPLX(1.D0,0.D0)/(CMPLX(1.D0,0.D0) + G55UP)
-              Z2 =  G54UP*Z1
-              Z3 =  G45UP*Z1
-              Z4 =  DCMPLX(1.D0,0.D0) + G44UP - G45UP*G54UP*Z1
-              Z4 =  DCMPLX(1.D0,0.D0)/Z4
+            Z1 =  CMPLX(1.D0,0.D0)/(CMPLX(1.D0,0.D0) + G55UP)
+            Z2 =  G54UP*Z1
+            Z3 =  G45UP*Z1
+            Z4 =  DCMPLX(1.D0,0.D0) + G44UP - G45UP*G54UP*Z1
+            Z4 =  DCMPLX(1.D0,0.D0)/Z4
 
-              DO NL = 1,NE
-                  UHLP1(NL) = U2(NL)
-                  VHLP1(NL) = V2(NL)*Z1
-                  UHLP2(NL) = Z4*( U1(NL) - U2(NL)*Z2 )
-                  VHLP2(NL) =      V1(NL) - V2(NL)*Z3
-              ENDDO
-	      
-              DO NL1 = 1,NE
-                  DO NL2 = 1,NE
-                      ULRINV(NL1,NL2) = ULRINV(NL1,NL2) &
-                      &        -  UHLP1(NL1)*VHLP1(NL2)&
-                      &        -  UHLP2(NL1)*VHLP2(NL2)
-                  ENDDO
-              ENDDO
-              ! Upgrade  URUP
-              DO NL = 1,NE
-                  UR(I4,NL) = UR(I4,NL) + &    
-                  &     DCMPLX(DEL44,0.D0)*UR(I4,NL)
-                  UR(I5,NL) = UR(I5,NL) +  &      
-                  &      DCMPLX(DEL55,0.D0)*UR(I5,NL)   
-              ENDDO
-              !	      Flip:
-              if( NFLAG == 1 ) then ! V1 < 0, (ni + nj - 1)
+            DO NL = 1,NE
+                UHLP1(NL) = U2(NL)
+                VHLP1(NL) = V2(NL)*Z1
+                UHLP2(NL) = Z4*( U1(NL) - U2(NL)*Z2 )
+                VHLP2(NL) =      V1(NL) - V2(NL)*Z3
+            ENDDO
+        
+            DO NL1 = 1,NE
+                DO NL2 = 1,NE
+                    ULRINV(NL1,NL2) = ULRINV(NL1,NL2) &
+                    &        -  UHLP1(NL1)*VHLP1(NL2)&
+                    &        -  UHLP2(NL1)*VHLP2(NL2)
+                ENDDO
+            ENDDO
+            ! Upgrade  URUP
+            DO NL = 1,NE
+                UR(I4,NL) = UR(I4,NL) + &    
+                &     DCMPLX(DEL44,0.D0)*UR(I4,NL)
+                UR(I5,NL) = UR(I5,NL) +  &      
+                &      DCMPLX(DEL55,0.D0)*UR(I5,NL)   
+            ENDDO
+            !	      Flip:
+            if( NFLAG == 1 ) then ! V1 < 0, (ni + nj - 1)
                 NAUX_V1(I,Nf1,NTAU) = - NAUX_V1(I,Nf1,NTAU)    
-              endif
-       endif
+            endif
+        endif
+        WEIGHT = SQRT(DBLE(RATIOTOT*DCONJG(RATIOTOT)))
+        phase = phase* ratiotot/dcmplx(weight,0.d0)
+        phasetot = phasetot + real(phase)
+        ncount = ncount + 1
     ENDDO
 	OBS(29) = OBS(29) + CMPLX(ACCM/DBLE(LFAM),0.D0)
 	OBS(30) = OBS(30) + CMPLX(1.D0,0.D0)

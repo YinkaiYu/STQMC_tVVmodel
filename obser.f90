@@ -16,7 +16,9 @@
         Complex(Kind=8), Dimension(:,:) :: UL, UR, ULRINV
         Complex(Kind=8), Dimension(:,:), Allocatable :: GRUP, GRUPC
         
-        Real (Kind=8) :: mom_x,mom_y,xk_p(2), aimj_p(2)
+        Real (Kind=8) :: aimj_p(2)
+        Real (Kind=8) :: mom_x,mom_y,xk_p(2)
+        Real (Kind=8) :: mom_shift_x, mom_shift_y, xk_shift_p(2)
         Integer :: RX_min, RX_max, RY_min, RY_max
         Complex(Kind=8) :: gk11, gk12
 
@@ -45,6 +47,109 @@
         !         enddo
         !     enddo
         ! enddo
+
+        ! QAH: peak at (0,0)
+
+        mom_x = 0.0d0
+        mom_y = 0.0d0
+        xk_p(1) = mom_x * b1_p(1) + mom_y * b2_p(1)
+        xk_p(2) = mom_x * b1_p(2) + mom_y * b2_p(2)
+        mom_shift_x = 1.0d0/dble(NLx)
+        mom_shift_y = 1.0d0/dble(NLy)
+        xk_shift_p(1) = mom_shift_x * b1_p(1) + mom_shift_y * b2_p(1)
+        xk_shift_p(2) = mom_shift_x * b1_p(2) + mom_shift_y * b2_p(2)
+
+        do ix = 1, nlx
+            do  iy = 1, nly
+                do jx = 1, nlx
+                    do jy = 1, nly
+                        i = invlist(ix,iy)
+                        j = invlist(jx,jy)
+                        imj_x = ix-jx
+                        imj_y = iy-jy
+                        aimj_p(1) = dble(imj_x)* a1_p(1) + dble(imj_y)* a2_p(1)
+                        aimj_p(2) = dble(imj_x)* a1_p(2) + dble(imj_y)* a2_p(2)
+                        do i_sublattice = 1, Norb
+                            do j_sublattice = 1, Norb
+                                do i_direction = 1, 2 ! for x or y direction
+                                    do j_direction = 1, 2
+                                        ii_0 = L_next(i,i_sublattice,0)
+                                        ii_n = L_next(i,i_sublattice,i_direction)
+                                        jj_0 = L_next(j,j_sublattice,0)
+                                        jj_n = L_next(j,j_sublattice,j_direction)
+                                        S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) &
+                                            & + real( phase * (GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) ) * exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                                        S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) &
+                                            & + real( phase * (GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) ) * exp( cmplx( 0.d0, xk_shift_p(1)*aimj_p(1)+xk_shift_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                                    enddo
+                                enddo
+                            enddo
+                        enddo
+                    enddo
+                enddo
+            enddo
+        enddo
+
+        ! CM & VBS: peak at (\pm K), K is the Dirac point
+
+        mom_x = 2.0d0/3.0d0
+        mom_y = 1.0d0/3.0d0
+        xk_p(1) = mom_x * b1_p(1) + mom_y * b2_p(1)
+        xk_p(2) = mom_x * b1_p(2) + mom_y * b2_p(2)
+        mom_shift_x = 2.0d0/3.0d0 + 1.0d0/dble(NLX)
+        mom_shift_y = 1.0d0/3.0d0 - 1.0d0/dble(NLY)
+        xk_shift_p(1) = mom_shift_x * b1_p(1) + mom_shift_y * b2_p(1)
+        xk_shift_p(2) = mom_shift_x * b1_p(2) + mom_shift_y * b2_p(2)
+
+        do ix = 1, nlx
+            do  iy = 1, nly
+                do jx = 1, nlx
+                    do jy = 1, nly
+                        i = invlist(ix,iy)
+                        j = invlist(jx,jy)
+                        imj_x = ix-jx
+                        imj_y = iy-jy
+                        aimj_p(1) = dble(imj_x)* a1_p(1) + dble(imj_y)* a2_p(1)
+                        aimj_p(2) = dble(imj_x)* a1_p(2) + dble(imj_y)* a2_p(2)
+
+                        ! CM
+                        do i_sublattice = 1, Norb
+                            do j_sublattice = 1, Norb
+                                ii = invnlist(ix,iy,i_sublattice,1)
+                                jj = invnlist(jx,jy,j_sublattice,1)
+                                S_CM(i_sublattice,j_sublattice) = S_CM(i_sublattice,j_sublattice) &
+                                    & + real( phase * (GRUPC(ii,jj)*GRUP(ii,jj) + (GRUPC(ii,ii)-0.5d0)*(GRUPC(jj,jj)-0.5d0) ) * exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                                S_CM_shift(i_sublattice,j_sublattice) = S_CM_shift(i_sublattice,j_sublattice) &
+                                    & + real( phase * (GRUPC(ii,jj)*GRUP(ii,jj) + (GRUPC(ii,ii)-0.5d0)*(GRUPC(jj,jj)-0.5d0) ) * exp( cmplx( 0.d0, xk_shift_p(1)*aimj_p(1)+xk_shift_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                            enddo
+                        enddo
+                        
+                        ! VBS
+                        do i_bond = 1, Nbond
+                            do j_bond = 1, Nbond
+                                ii_0 = L_bonds(i,0)
+                                ii_n = L_bonds(i,i_bond)
+                                jj_0 = L_bonds(j,0)
+                                jj_n = L_bonds(j,j_bond)
+                                S_VBS(i_bond,j_bond) = S_VBS(i_bond,j_bond) + real( phase * ( &
+                                    &   GRUPC(ii_0,jj_n)*GRUP(ii_n,jj_0) + GRUPC(ii_0,ii_n)*GRUPC(jj_0,jj_n) &
+                                    & + GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) &
+                                    & + GRUPC(ii_n,jj_n)*GRUP(ii_0,jj_0) + GRUPC(ii_n,ii_0)*GRUPC(jj_0,jj_n) &
+                                    & + GRUPC(ii_n,jj_0)*GRUP(ii_0,jj_n) + GRUPC(ii_n,ii_0)*GRUPC(jj_n,jj_0) &
+                                & ) * exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                                S_VBS_shift(i_bond,j_bond) = S_VBS_shift(i_bond,j_bond) + real( phase * ( &
+                                    &   GRUPC(ii_0,jj_n)*GRUP(ii_n,jj_0) + GRUPC(ii_0,ii_n)*GRUPC(jj_0,jj_n) &
+                                    & + GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) &
+                                    & + GRUPC(ii_n,jj_n)*GRUP(ii_0,jj_0) + GRUPC(ii_n,ii_0)*GRUPC(jj_0,jj_n) &
+                                    & + GRUPC(ii_n,jj_0)*GRUP(ii_0,jj_n) + GRUPC(ii_n,ii_0)*GRUPC(jj_n,jj_0) &
+                                & ) * exp( cmplx( 0.d0, xk_shift_p(1)*aimj_p(1)+xk_shift_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                            enddo
+                        enddo
+
+                    enddo
+                enddo
+            enddo
+        enddo
 
 ! old observables
         
@@ -101,8 +206,8 @@
             enddo
         enddo
 
-        mom_x = 2.0d0/3.0d0 + 1.0d0*PI/dble(NLx)
-        mom_y = 1.0d0/3.0d0 - 1.0d0*PI/dble(NLy)
+        mom_x = 2.0d0/3.0d0 + 1.0d0/dble(NLx)
+        mom_y = 1.0d0/3.0d0 - 1.0d0/dble(NLy)
         xk_p(1) = mom_x * b1_p(1) + mom_y * b2_p(1)
         xk_p(2) = mom_x * b1_p(2) + mom_y * b2_p(2)
 
