@@ -5,7 +5,7 @@
       ! For equal time
       Integer  :: LTROT_ME,  NME_ST, NME_EN 
       COMPLEX  (Kind=8), Dimension(:,:,:,:), Allocatable, Save  ::  DEN
-      real (kind=8), save :: kinetic, potential, density, M2
+      real (kind=8), save :: kinetic, potential, density, M2, QAH_temp
       real (kind=8), save :: S0_11, S0_12, S0_21, S0_22, Sk_11, Sk_12, Sk_21, Sk_22
       real (kind=8), save, allocatable :: S_QAH(:,:,:,:), S_QAH_shift(:,:,:,:)  ! sublattice, sublattice', xydirection, xydirection'
       real (kind=8), save, allocatable :: S_CM(:,:), S_CM_shift(:,:)            ! sublattice, sublattice'

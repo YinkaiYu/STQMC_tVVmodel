@@ -29,24 +29,21 @@
         !GRUP (I,J) = <c_i c^+_j >
         !GRUPC (I,J) = <c^+_i c_j >
 
-! QAH & CM
-        ! i_sublattice   = 1
-        ! i_NNNdirection = 1
-        ! j_sublattice   = 1
-        ! j_NNNdirection = 1
-        ! do ix = 1, nlx
-        !     do  iy = 1, nly
-        !         do jx = 1, nlx
-        !             do jy = 1, nly
-        !                 ii_0 = invnlist(ix,iy,i_sublattice,1)
-        !                 jj_0 = invnlist(jx,jy,j_sublattice,1)
-        !                 ii_n = 
-        !                 imj_x = ix-jx
-        !                 imj_y = iy-jy
-        !             enddo
-        !         enddo
-        !     enddo
-        ! enddo
+        ! temp QAH test
+
+        do ix = 1, NLX
+            do iy = 1, NLY
+                do i_sublattice = 1, Norb
+                    do i_direction = 1, Next
+                        i = invlist(ix,iy)
+                        ii_0 = L_next(i,i_sublattice,0)
+                        ii_n = L_next(i,i_sublattice,i_direction)
+                        R1 = (-1.0d0)**dble(i_sublattice+i_direction)
+                        QAH_temp = QAH_temp + aimag(GRUPC(ii_0,ii_n) - GRUPC(ii_n,ii_0)) * R1 * real(phase) / dble(LQ)
+                    enddo
+                enddo
+            enddo
+        enddo
 
         ! QAH: peak at (0,0)
 
@@ -77,10 +74,18 @@
                                         ii_n = L_next(i,i_sublattice,i_direction)
                                         jj_0 = L_next(j,j_sublattice,0)
                                         jj_n = L_next(j,j_sublattice,j_direction)
-                                        S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) &
-                                            & + real( phase * (GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) ) * exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
-                                        S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) &
-                                            & + real( phase * (GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) ) * exp( cmplx( 0.d0, xk_shift_p(1)*aimj_p(1)+xk_shift_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                                        S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) + real( phase * ( &
+                                            &   GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) &
+                                            & - GRUPC(ii_0,jj_n)*GRUP(ii_n,jj_0) - GRUPC(ii_0,ii_n)*GRUPC(jj_0,jj_n) &
+                                            & - GRUPC(ii_n,jj_0)*GRUP(ii_0,jj_n) - GRUPC(ii_n,ii_0)*GRUPC(jj_n,jj_0) &
+                                            & + GRUPC(ii_n,jj_n)*GRUP(ii_0,jj_0) + GRUPC(ii_n,ii_0)*GRUPC(jj_0,jj_n) &
+                                        & ) * exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                                        S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) + real( phase * ( &
+                                            &   GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) &
+                                            & - GRUPC(ii_0,jj_n)*GRUP(ii_n,jj_0) - GRUPC(ii_0,ii_n)*GRUPC(jj_0,jj_n) &
+                                            & - GRUPC(ii_n,jj_0)*GRUP(ii_0,jj_n) - GRUPC(ii_n,ii_0)*GRUPC(jj_n,jj_0) &
+                                            & + GRUPC(ii_n,jj_n)*GRUP(ii_0,jj_0) + GRUPC(ii_n,ii_0)*GRUPC(jj_0,jj_n) &
+                                        & ) * exp( cmplx( 0.d0, xk_shift_p(1)*aimj_p(1)+xk_shift_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
                                     enddo
                                 enddo
                             enddo

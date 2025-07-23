@@ -48,6 +48,7 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
      DEN = ZNORM* DEN
      kinetic = znorm*kinetic; potential = znorm*potential
      density = znorm* density
+     QAH_temp = znorm* QAH_temp
      M2 = znorm* M2
      S0_11 = znorm* S0_11
      S0_12 = znorm* S0_12
@@ -87,6 +88,18 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
      CALL MPI_REDUCE(M2,Collect3,N,MPI_REAL8,MPI_SUM,&
           & 0,MPI_COMM_WORLD,IERR)
      M2 = Collect3/DBLE(ISIZE)
+
+     N = 1
+     Collect3 =0.0d0
+     CALL MPI_REDUCE(density,Collect3,N,MPI_REAL8,MPI_SUM,&
+          & 0,MPI_COMM_WORLD,IERR)
+     density = Collect3/DBLE(ISIZE)
+
+     N = 1
+     Collect3 =0.0d0
+     CALL MPI_REDUCE(QAH_temp,Collect3,N,MPI_REAL8,MPI_SUM,&
+          & 0,MPI_COMM_WORLD,IERR)
+     QAH_temp = Collect3/DBLE(ISIZE)
 
      N = 1
      Collect3 =0.0d0
@@ -228,8 +241,8 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
           call orderparameter(potential,filek)
           filek = "density"
           call orderparameter(density,filek)
-          !    filek = "M2"
-          !    call orderparameter(M2,filek)
+          filek = "QAH_temp"
+          call orderparameter(QAH_temp,filek)
           filek = "S0_11"
           call orderparameter(S0_11,filek)
           filek = "S0_12"

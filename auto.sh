@@ -1,1 +1,1 @@
-make && make clean && cp SuNF.out ./test/ && cd ./test/ && sbatch dqmc && cd ../
+make && make clean && cp SuNF.out ../test/ && cd ../test/ && sbatch dqmc && cd ../code/
