@@ -34,7 +34,7 @@
         do ix = 1, NLX
             do iy = 1, NLY
                 do i_sublattice = 1, Norb
-                    do i_direction = 1, Next
+                    do i_direction = 1, Nnext
                         i = invlist(ix,iy)
                         ii_0 = L_next(i,i_sublattice,0)
                         ii_n = L_next(i,i_sublattice,i_direction)

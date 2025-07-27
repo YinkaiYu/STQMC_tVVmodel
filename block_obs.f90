@@ -41,6 +41,7 @@
       Subroutine Init_obs
         DEN   = CMPLX( 0.d0 , 0.d0 )
         M2 = 0.0d0
+        QAH_temp = 0.0d0
         S0_11 = 0.0d0
         S0_12 = 0.0d0
         S0_21 = 0.0d0
