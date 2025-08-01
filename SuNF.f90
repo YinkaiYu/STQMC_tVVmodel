@@ -86,6 +86,7 @@
       READ(20,*) BETA, LTROT, NWRAP, RT1, RV1, RV2
       READ(20,*) NBIN, NSWEEP, LTAU, NTDM
       READ(20,*) NLX, NLY, Itwist, TwistX, N_SUN, NE
+      READ(20,*) iniQAHt2
       CLOSE(20)
    ENDIF
       L_Trot_hop = .false.
@@ -94,6 +95,7 @@
    CALL MPI_BCAST(RV1 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(RV2 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(RT1 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
+   CALL MPI_BCAST(iniQAHt2 ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(Itwist ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(TwistX ,1,MPI_REAL8,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(NLX ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IERR)
@@ -140,6 +142,7 @@
       WRITE(50,*) 'Length of fam.   :', LFAM
       WRITE(50,*) 'Itwist           :', Itwist
       WRITE(50,*) 'Twist in x-direction phi/phi_0 : ', TwistX
+      WRITE(50,*) 'iniQAHt2         :', iniQAHt2
       if ( L_Trot_hop ) then
          Write(50,*) ' Trotter decomposition for hopping'
       else

@@ -82,7 +82,7 @@ SUBROUTINE SPROJ(DEGEN,EN_FREE)
          ii_0 = L_Bonds(i,0)
          do nf = 1,Nbond
             ii_n = L_Bonds(i,nf)
-            Z1 = CMPLX(-0.001D0,0.D0)
+            Z1 = CMPLX(-RT1,0.D0)
             TMP(ii_0,ii_n)  =  Z1
             TMP(ii_n,ii_0)  = conjg(Z1)
          enddo
@@ -95,7 +95,7 @@ SUBROUTINE SPROJ(DEGEN,EN_FREE)
                   i = invlist(ix,iy)
                   ii_0 = L_next(i,i_sublattice,0)
                   ii_n = L_next(i,i_sublattice,i_direction)
-                  R2 = (-1.0d0)**dble(i_sublattice+i_direction)
+                  R2 = - iniQAHt2 * (-1.0d0)**dble(i_sublattice+i_direction)
                   TMP(ii_0,ii_n) = CMPLX( 0.d0,  R2)
                   TMP(ii_n,ii_0) = CMPLX( 0.d0, -R2)
                enddo

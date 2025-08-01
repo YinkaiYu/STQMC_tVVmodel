@@ -8,7 +8,7 @@
                end function ranf
           end interface
 
-        Real (Kind=8),save :: BETA , RV1, RV2, RT1, DTAU, PI,  TwistX
+        Real (Kind=8),save :: BETA , RV1, RV2, RT1, DTAU, PI,  TwistX, iniQAHt2
         Integer,      save :: LTROT, NWRAP, N_SUN, NBIN, NSWEEP,  NORB, NORB1, NDIM, LTAU,  &
              &                LFAM, NFAM, Nbond, Nnext, nspin, LQ, NLX, NLY, NE, Itwist
         real(kind=8), DIMENSION(:), save :: a1_p(2), a2_p(2), b1_p(2), b2_p(2)

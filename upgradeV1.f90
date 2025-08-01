@@ -93,6 +93,8 @@
             ! WRITE(50,*) 'Accepted'   
             ! Upgrade the inverse
             ACCM = ACCM + 1.D0
+            WEIGHT = SQRT(DBLE(RATIOTOT*DCONJG(RATIOTOT)))
+            phase = phase* ratiotot/dcmplx(weight,0.d0)
             
             DO NL  = 1,NE
                 DO NL1 = 1,NE
@@ -133,8 +135,6 @@
                 NAUX_V1(I,Nf1,NTAU) = - NAUX_V1(I,Nf1,NTAU)    
             endif
         endif
-        WEIGHT = SQRT(DBLE(RATIOTOT*DCONJG(RATIOTOT)))
-        phase = phase* ratiotot/dcmplx(weight,0.d0)
         phasetot = phasetot + real(phase)
         ncount = ncount + 1
     ENDDO
