@@ -11,6 +11,7 @@
       real (kind=8), save, allocatable :: S_CM(:,:), S_CM_shift(:,:)            ! sublattice, sublattice'
       real (kind=8), save, allocatable :: S_VBS(:,:), S_VBS_shift(:,:)          ! neighbor, neighbor'
       REAL (Kind=8), save :: fermicor11_deltaq, fermicor12_deltaq, fermicor21_deltaq, fermicor22_deltaq
+      REAL (Kind=8), save :: fermicor11_onethird, fermicor12_onethird, fermicor21_onethird, fermicor22_onethird
       real (kind=8), save :: phaseTot
       Integer, save :: Ncount
 
@@ -60,6 +61,10 @@
         fermicor12_deltaq = 0.d0
         fermicor21_deltaq = 0.d0
         fermicor22_deltaq = 0.d0
+        fermicor11_onethird = 0.d0
+        fermicor12_onethird = 0.d0
+        fermicor21_onethird = 0.d0
+        fermicor22_onethird = 0.d0
         density = 0.0d0
         kinetic = 0.0d0
         potential = 0.d0

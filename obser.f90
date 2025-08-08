@@ -241,6 +241,20 @@
             enddo
         enddo
 
+        do ix = 1, nlx
+            do iy = 1, nly
+                iA = invnlist(ix,iy,1,1)
+                iB = invnlist(ix,iy,2,1)
+                jx = npbcx(ix+NLX/3)
+                jy = npbcy(iy+NLY/3)
+                jA = invnlist(jx,jy,1,1)
+                jB = invnlist(jx,jy,2,1)
+                fermicor11_onethird = fermicor11_onethird + real( GRUPC(iA,jA) + GRUPC(jA,iA) ) / dble(LQ)
+                fermicor12_onethird = fermicor12_onethird + real( GRUPC(iA,jB) + GRUPC(jB,iA) ) / dble(LQ)
+                fermicor21_onethird = fermicor21_onethird + real( GRUPC(iB,jA) + GRUPC(jA,iB) ) / dble(LQ)
+                fermicor22_onethird = fermicor22_onethird + real( GRUPC(iB,jB) + GRUPC(jB,iB) ) / dble(LQ)
+            enddo
+        enddo
 
         ! do ix = 1, nlx
         !     do  iy = 1, nly

@@ -68,6 +68,10 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
      fermicor12_deltaq = fermicor12_deltaq / DBLE(NOBS)
      fermicor21_deltaq = fermicor21_deltaq / DBLE(NOBS)
      fermicor22_deltaq = fermicor22_deltaq / DBLE(NOBS)
+     fermicor11_onethird = fermicor11_onethird / DBLE(NOBS)
+     fermicor12_onethird = fermicor12_onethird / DBLE(NOBS)
+     fermicor21_onethird = fermicor21_onethird / DBLE(NOBS)
+     fermicor22_onethird = fermicor22_onethird / DBLE(NOBS)
      phasetot = phasetot/dble(Ncount)
 
      !Collect.
@@ -207,6 +211,24 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
           & 0,MPI_COMM_WORLD,IERR)
      fermicor22_deltaq = Collect3/DBLE(ISIZE)
 
+     N = 1
+     Collect3 =0.0d0
+     CALL MPI_REDUCE(fermicor11_onethird,Collect3,N,MPI_REAL8,MPI_SUM,&
+          & 0,MPI_COMM_WORLD,IERR)
+     fermicor11_onethird = Collect3/DBLE(ISIZE)
+     Collect3 =0.0d0
+     CALL MPI_REDUCE(fermicor12_onethird,Collect3,N,MPI_REAL8,MPI_SUM,&
+          & 0,MPI_COMM_WORLD,IERR)
+     fermicor12_onethird = Collect3/DBLE(ISIZE)
+     Collect3 =0.0d0
+     CALL MPI_REDUCE(fermicor21_onethird,Collect3,N,MPI_REAL8,MPI_SUM,&
+          & 0,MPI_COMM_WORLD,IERR)
+     fermicor21_onethird = Collect3/DBLE(ISIZE)
+     Collect3 =0.0d0
+     CALL MPI_REDUCE(fermicor22_onethird,Collect3,N,MPI_REAL8,MPI_SUM,&
+          & 0,MPI_COMM_WORLD,IERR)
+     fermicor22_onethird = Collect3/DBLE(ISIZE)
+
 
      IF (IRANK.EQ.0) THEN
 
@@ -314,6 +336,15 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
           Call orderparameter(fermicor21_deltaq, filek )
           filek = "fermicor22_dk"
           Call orderparameter(fermicor22_deltaq, filek )
+
+          filek = "fermicor11_onethird"
+          Call orderparameter(fermicor11_onethird, filek )
+          filek = "fermicor12_onethird"
+          Call orderparameter(fermicor12_onethird, filek )
+          filek = "fermicor21_onethird"
+          Call orderparameter(fermicor21_onethird, filek )
+          filek = "fermicor22_onethird"
+          Call orderparameter(fermicor22_onethird, filek )
           
      ENDIF
      END SUBROUTINE PREQ
