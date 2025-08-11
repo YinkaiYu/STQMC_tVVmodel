@@ -11,11 +11,11 @@
            END SUBROUTINE MMTHR
            SUBROUTINE  MMUUR(A, NF, NT, NFLAG) 
              COMPLEX (Kind=8), Dimension(:,:) :: A 
-             INTEGER :: NF, NT, NFLAG
+             INTEGER :: NF, NT_ARG, NFLAG
            END SUBROUTINE MMUUR
            SUBROUTINE  MMUURP(A, NF, NT, NFLAG) 
              COMPLEX (Kind=8), Dimension(:,:) :: A 
-             INTEGER :: NF, NT, NFLAG
+             INTEGER :: NF, NT_ARG, NFLAG
            END SUBROUTINE MMUURP
         END Interface
         
