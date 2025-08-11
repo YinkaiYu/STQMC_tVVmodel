@@ -32,4 +32,22 @@ Subroutine  SetH(HLP2)
       enddo
    endif
 
+   if (Itwist==3) then
+      ! t2 term twist
+      do ix = 1, NLX
+         do iy = 1, NLY
+            do i_sublattice = 1, Norb
+               do i_direction = 1, Nnext
+                  i = invlist(ix,iy)
+                  ii_0 = L_next(i,i_sublattice,0)
+                  ii_n = L_next(i,i_sublattice,i_direction)
+                  R2 = - TwistX / dble(LQ) * (-1.0d0)**dble(i_sublattice+i_direction)
+                  HLP2(ii_0,ii_n) = CMPLX( 0.d0,  R2)
+                  HLP2(ii_n,ii_0) = CMPLX( 0.d0, -R2)
+               enddo
+            enddo
+         enddo
+      enddo
+   endif
+
 end Subroutine SetH

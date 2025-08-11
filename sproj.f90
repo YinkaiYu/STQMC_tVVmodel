@@ -29,6 +29,10 @@ SUBROUTINE SPROJ(DEGEN,EN_FREE)
       write(6,*) 'Initial state: DSM (Itwist=2)'
       Call SetH(TMP)
    endif
+   if (Itwist == 3) then ! DSM (QAH twist)
+      write(6,*) 'Initial state: DSM (QAH twist)'
+      Call SetH(TMP)
+   endif
    if (Itwist == 0) then ! CDW
       write(6,*) 'Initial state: CDW (Itwist=0)'
       IseedHop = 3958195
