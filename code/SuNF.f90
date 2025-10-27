@@ -87,6 +87,7 @@
       READ(20,*) NBIN, NSWEEP, LTAU, NTDM
       READ(20,*) NLX, NLY, Itwist, TwistX, N_SUN, NE
       READ(20,*) iniQAHt2
+      READ(20,*) output_real_QAH
       CLOSE(20)
    ENDIF
       L_Trot_hop = .false.
@@ -108,6 +109,7 @@
    CALL MPI_BCAST(NSWEEP ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(LTAU ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IERR)
    CALL MPI_BCAST(NTDM ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IERR)
+   CALL MPI_BCAST(output_real_QAH ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IERR)
    CALL Allocate_Blockc
    CALL Allocate_obs( NLX, NLY, Norb, LTROT )
    IF (LTAU == 1) THEN

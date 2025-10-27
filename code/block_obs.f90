@@ -8,6 +8,7 @@
       real (kind=8), save :: kinetic, potential, density, M2, QAH_temp
       real (kind=8), save :: S0_11, S0_12, S0_21, S0_22, Sk_11, Sk_12, Sk_21, Sk_22
       real (kind=8), save, allocatable :: S_QAH(:,:,:,:), S_QAH_shift(:,:,:,:)  ! sublattice, sublattice', xydirection, xydirection'
+      real (kind=8), save, allocatable :: real_QAH(:,:), imag_QAH(:,:) ! rx, ry
       real (kind=8), save, allocatable :: S_CM(:,:), S_CM_shift(:,:)            ! sublattice, sublattice'
       real (kind=8), save, allocatable :: S_VBS(:,:), S_VBS_shift(:,:)          ! neighbor, neighbor'
       REAL (Kind=8), save :: fermicor11_deltaq, fermicor12_deltaq, fermicor21_deltaq, fermicor22_deltaq
@@ -30,6 +31,7 @@
         NME_ST = LTROT/2 - LTROT_ME/2 
         NME_EN = LTROT/2 + LTROT_ME/2 
         allocate( DEN(RX_min:RX_max, RY_min:RY_max, norb, norb) )
+        allocate( real_QAH(NLX, NLY), imag_QAH(NLX, NLY) )
         allocate( S_QAH(Norb,Norb,2,2), S_CM(Norb,Norb), S_VBS(Nbond,Nbond) )
         allocate( S_QAH_shift(Norb,Norb,2,2), S_CM_shift(Norb,Norb), S_VBS_shift(Nbond,Nbond) )
       end Subroutine Allocate_obs
@@ -57,6 +59,8 @@
         S_QAH_shift = 0.0d0
         S_CM_shift  = 0.0d0
         S_VBS_shift = 0.0d0
+        real_QAH = 0.0d0
+        imag_QAH = 0.0d0
         fermicor11_deltaq = 0.d0
         fermicor12_deltaq = 0.d0
         fermicor21_deltaq = 0.d0

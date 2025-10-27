@@ -20,7 +20,7 @@
         Real (Kind=8) :: mom_x,mom_y,xk_p(2)
         Real (Kind=8) :: mom_shift_x, mom_shift_y, xk_shift_p(2)
         Integer :: RX_min, RX_max, RY_min, RY_max
-        Complex(Kind=8) :: gk11, gk12
+        Complex(Kind=8) :: gk11, gk12, corr_QAH_iijj
 
         Allocate(GRUP(Ndim,Ndim), GRUPC(Ndim,Ndim))
         
@@ -62,8 +62,8 @@
                     do jy = 1, nly
                         i = invlist(ix,iy)
                         j = invlist(jx,jy)
-                        imj_x = ix-jx
-                        imj_y = iy-jy
+                        imj_x = npbcx(ix-jx)
+                        imj_y = npbcy(iy-jy)
                         aimj_p(1) = dble(imj_x)* a1_p(1) + dble(imj_y)* a2_p(1)
                         aimj_p(2) = dble(imj_x)* a1_p(2) + dble(imj_y)* a2_p(2)
                         do i_sublattice = 1, Norb
@@ -74,18 +74,18 @@
                                         ii_n = L_next(i,i_sublattice,i_direction)
                                         jj_0 = L_next(j,j_sublattice,0)
                                         jj_n = L_next(j,j_sublattice,j_direction)
-                                        S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) + real( phase * ( &
+                                        corr_QAH_iijj = phase * ( &
                                             &   GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) &
                                             & - GRUPC(ii_0,jj_n)*GRUP(ii_n,jj_0) - GRUPC(ii_0,ii_n)*GRUPC(jj_0,jj_n) &
                                             & - GRUPC(ii_n,jj_0)*GRUP(ii_0,jj_n) - GRUPC(ii_n,ii_0)*GRUPC(jj_n,jj_0) &
                                             & + GRUPC(ii_n,jj_n)*GRUP(ii_0,jj_0) + GRUPC(ii_n,ii_0)*GRUPC(jj_0,jj_n) &
-                                        & ) * exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
-                                        S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) + real( phase * ( &
-                                            &   GRUPC(ii_0,jj_0)*GRUP(ii_n,jj_n) + GRUPC(ii_0,ii_n)*GRUPC(jj_n,jj_0) &
-                                            & - GRUPC(ii_0,jj_n)*GRUP(ii_n,jj_0) - GRUPC(ii_0,ii_n)*GRUPC(jj_0,jj_n) &
-                                            & - GRUPC(ii_n,jj_0)*GRUP(ii_0,jj_n) - GRUPC(ii_n,ii_0)*GRUPC(jj_n,jj_0) &
-                                            & + GRUPC(ii_n,jj_n)*GRUP(ii_0,jj_0) + GRUPC(ii_n,ii_0)*GRUPC(jj_0,jj_n) &
-                                        & ) * exp( cmplx( 0.d0, xk_shift_p(1)*aimj_p(1)+xk_shift_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                                        & ) 
+                                        if (output_real_QAH == 1 .and. i_sublattice == j_sublattice .and. i_direction == j_direction) then
+                                            real_QAH(imj_x,imj_y) = real_QAH(imj_x,imj_y) +  real( corr_QAH_iijj ) / dble( 4 * LQ * LQ )
+                                            imag_QAH(imj_x,imj_y) = imag_QAH(imj_x,imj_y) + aimag( corr_QAH_iijj ) / dble( 4 * LQ * LQ )
+                                        end if
+                                        S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) + real( corr_QAH_iijj * exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
+                                        S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) + real( corr_QAH_iijj * exp( cmplx( 0.d0, xk_shift_p(1)*aimj_p(1)+xk_shift_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
                                     enddo
                                 enddo
                             enddo
@@ -228,7 +228,7 @@
                         jdo   = invnlist(jx,jy,2,1)
                         imj_x = ix-jx ! no npbcx here
                         imj_y = iy-jy ! no npbcy here
-                        imj   = invlist(npbcx(imj_x),npbcx(imj_y))
+                        imj   = invlist(npbcx(imj_x),npbcy(imj_y))
                         ! fermion correlation function (PRL 128, 225701 (2022))
                         aimj_p(1) = dble(imj_x)* a1_p(1) + dble(imj_y)* a2_p(1)
                         aimj_p(2) = dble(imj_x)* a1_p(2) + dble(imj_y)* a2_p(2)

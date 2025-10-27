@@ -120,6 +120,25 @@ SUBROUTINE SPROJ(DEGEN,EN_FREE)
          enddo
       enddo
    endif
+   if (Itwist == -6) then ! t term = CDW
+      write(6,*) 'Initial state: t term = CDW (Itwist=-6)'
+      ! t1
+      do I = 1,LQ
+         ii_0 = L_Bonds(i,0)
+         do nf = 1,Nbond
+            ii_n = L_Bonds(i,nf)
+            Z1 = CMPLX(-RT1,0.D0)
+            TMP(ii_0,ii_n)  =  Z1
+            TMP(ii_n,ii_0)  = conjg(Z1)
+         enddo
+      enddo
+      ! cdw gap
+      do ii = 1, Ndim
+         no = Nlist(ii,3)
+         R1 = (-RT1)**dble(no)
+         TMP(ii,ii) = CMPLX( R1, 0.d0)
+      enddo
+   endif
    CALL Diag(TMP,PROJ,WC)
    ! write(6,*) 'matrix of TMP'
    ! WRITE(6, '(A7)',advance='no') "Col/Row" 

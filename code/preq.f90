@@ -64,6 +64,10 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
      S_QAH_shift = znorm* S_QAH_shift
      S_CM_shift  = znorm* S_CM_shift
      S_VBS_shift = znorm* S_VBS_shift
+     if (output_real_QAH == 1) then
+          real_QAH = real_QAH / DBLE(NOBS)
+          imag_QAH = imag_QAH / DBLE(NOBS)
+     endif
      fermicor11_deltaq = fermicor11_deltaq / DBLE(NOBS)
      fermicor12_deltaq = fermicor12_deltaq / DBLE(NOBS)
      fermicor21_deltaq = fermicor21_deltaq / DBLE(NOBS)
@@ -180,6 +184,22 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
      CALL MPI_REDUCE(S_VBS_shift,real_2index,N,MPI_REAL8,MPI_SUM,&
           & 0,MPI_COMM_WORLD,IERR)
      S_VBS_shift = real_2index/DBLE(ISIZE)
+
+     if (output_real_QAH == 1) then
+          deallocate(real_2index)
+          allocate(real_2index(NLX, NLY))
+          N = LQ
+
+          real_2index = 0.d0
+          CALL MPI_REDUCE(real_QAH,real_2index,N,MPI_REAL8,MPI_SUM,&
+               & 0,MPI_COMM_WORLD,IERR)
+          real_QAH = real_2index/DBLE(ISIZE)
+
+          real_2index = 0.d0
+          CALL MPI_REDUCE(imag_QAH,real_2index,N,MPI_REAL8,MPI_SUM,&
+               & 0,MPI_COMM_WORLD,IERR)
+          imag_QAH = real_2index/DBLE(ISIZE)
+     endif
 
      Allocate(Collect2(RX_min:RX_max, RY_min:RY_max, norb, norb))
      N = (2*NLX-1)*(2*NLY-1)*Norb*Norb
@@ -345,6 +365,23 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
           Call orderparameter(fermicor21_onethird, filek )
           filek = "fermicor22_onethird"
           Call orderparameter(fermicor22_onethird, filek )
+
+          if (output_real_QAH == 1) then
+               OPEN (UNIT=20,FILE="real_QAH",STATUS='UNKNOWN', action="write", position="append")
+               do imj_x = 1,NLX
+                    do imj_y = 1,NLY
+                         write(20,*) imj_x, imj_y, real_QAH(imj_x,imj_y)
+                    enddo
+               enddo
+               close(20)
+               OPEN (UNIT=20,FILE="imag_QAH",STATUS='UNKNOWN', action="write", position="append")   
+               do imj_x = 1,NLX
+                    do imj_y = 1,NLY
+                         write(20,*) imj_x, imj_y, imag_QAH(imj_x,imj_y)
+                    enddo
+               enddo
+               close(20)
+          endif
           
      ENDIF
      END SUBROUTINE PREQ
