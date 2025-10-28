@@ -76,6 +76,8 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
      fermicor12_onethird = fermicor12_onethird / DBLE(NOBS)
      fermicor21_onethird = fermicor21_onethird / DBLE(NOBS)
      fermicor22_onethird = fermicor22_onethird / DBLE(NOBS)
+     gk1221 = gk1221 / DBLE(NOBS)
+     gk2112 = gk2112 / DBLE(NOBS)
      phasetot = phasetot/dble(Ncount)
 
      !Collect.
@@ -145,8 +147,8 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
           & 0,MPI_COMM_WORLD,IERR)
      Sk_22 = Collect3/DBLE(ISIZE)
 
-     allocate(real_4index(Norb,Norb,2,2))
-     N = Norb*Norb*2*2
+     allocate(real_4index(Norb,Norb,3,3))
+     N = Norb*Norb*3*3
 
      real_4index = 0.d0
      CALL MPI_REDUCE(S_QAH,real_4index,N,MPI_REAL8,MPI_SUM,&
@@ -249,6 +251,15 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
           & 0,MPI_COMM_WORLD,IERR)
      fermicor22_onethird = Collect3/DBLE(ISIZE)
 
+     N = 1
+     Collect3 =0.0d0
+     CALL MPI_REDUCE(gk1221,Collect3,N,MPI_REAL8,MPI_SUM,&
+          & 0,MPI_COMM_WORLD,IERR)
+     gk1221 = Collect3/DBLE(ISIZE)
+     Collect3 =0.0d0
+     CALL MPI_REDUCE(gk2112,Collect3,N,MPI_REAL8,MPI_SUM,&
+          & 0,MPI_COMM_WORLD,IERR)
+     gk2112 = Collect3/DBLE(ISIZE)
 
      IF (IRANK.EQ.0) THEN
 
@@ -304,8 +315,8 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
           
           do i_sublattice = 1, Norb
                do j_sublattice = 1, Norb
-                    do i_direction = 1, 2 ! for x or y direction
-                         do j_direction = 1, 2
+                    do i_direction = 1, 3 
+                         do j_direction = 1, 3
 
                               write(filek, "('S_QAH_','sub',I0,'sub',I0,'drc',I0,'drc',I0)") i_sublattice, j_sublattice, i_direction, j_direction
                               S_temp = S_QAH(i_sublattice,j_sublattice,i_direction,j_direction)
@@ -319,6 +330,66 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
                     enddo
                enddo
           enddo
+
+          filek = "S_QAH"
+          S_temp = 0.0d0
+          do i_sublattice = 1, Norb
+               do j_sublattice = 1, Norb
+                    do i_direction = 1, 3 
+                         do j_direction = 1, 3
+                              S_temp = S_temp + S_QAH(i_sublattice,j_sublattice,i_direction,j_direction)
+                         enddo
+                    enddo
+               enddo
+          enddo
+          call orderparameter(S_temp,filek)
+
+          filek = "S_QAH_sub1"
+          S_temp = 0.0d0
+          i_sublattice = 1
+          j_sublattice = 1
+          do i_direction = 1, 3 
+               do j_direction = 1, 3
+                    S_temp = S_temp + S_QAH(i_sublattice,j_sublattice,i_direction,j_direction)
+               enddo
+          enddo
+          call orderparameter(S_temp,filek)
+
+          filek = "S_QAH_sub2"
+          S_temp = 0.0d0
+          i_sublattice = 2
+          j_sublattice = 2
+          do i_direction = 1, 3 
+               do j_direction = 1, 3
+                    S_temp = S_temp + S_QAH(i_sublattice,j_sublattice,i_direction,j_direction)
+               enddo
+          enddo
+          call orderparameter(S_temp,filek)
+
+          filek = "S_QAH_parallel"
+          S_temp = 0.0d0
+          do i_sublattice = 1, Norb
+               do i_direction = 1, 3 
+                    S_temp = S_temp + S_QAH(i_sublattice,i_sublattice,i_direction,i_direction)
+               enddo
+          enddo
+          call orderparameter(S_temp,filek)
+
+          filek = "S_QAH_sub1_parallel"
+          S_temp = 0.0d0
+          i_sublattice = 1
+          do i_direction = 1, 3 
+               S_temp = S_temp + S_QAH(i_sublattice,i_sublattice,i_direction,i_direction)
+          enddo
+          call orderparameter(S_temp,filek)
+
+          filek = "S_QAH_sub2_parallel"
+          S_temp = 0.0d0
+          i_sublattice = 2
+          do i_direction = 1, 3 
+               S_temp = S_temp + S_QAH(i_sublattice,i_sublattice,i_direction,i_direction)
+          enddo
+          call orderparameter(S_temp,filek)
 
           do i_sublattice = 1, Norb
                do j_sublattice = 1, Norb
@@ -365,6 +436,11 @@ SUBROUTINE PREQ(NOBS,Nobs_tot)
           Call orderparameter(fermicor21_onethird, filek )
           filek = "fermicor22_onethird"
           Call orderparameter(fermicor22_onethird, filek )
+
+          filek = "gk1221"
+          Call orderparameter(gk1221, filek )
+          filek = "gk2112"
+          Call orderparameter(gk2112, filek )
 
           if (output_real_QAH == 1) then
                OPEN (UNIT=20,FILE="real_QAH",STATUS='UNKNOWN', action="write", position="append")

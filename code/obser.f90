@@ -20,7 +20,7 @@
         Real (Kind=8) :: mom_x,mom_y,xk_p(2)
         Real (Kind=8) :: mom_shift_x, mom_shift_y, xk_shift_p(2)
         Integer :: RX_min, RX_max, RY_min, RY_max
-        Complex(Kind=8) :: gk11, gk12, corr_QAH_iijj
+        Complex(Kind=8) :: gk11, gk12, corr_QAH_iijj, temp_gk11, temp_gk12, temp_gk21, temp_gk22
 
         Allocate(GRUP(Ndim,Ndim), GRUPC(Ndim,Ndim))
         
@@ -68,8 +68,8 @@
                         aimj_p(2) = dble(imj_x)* a1_p(2) + dble(imj_y)* a2_p(2)
                         do i_sublattice = 1, Norb
                             do j_sublattice = 1, Norb
-                                do i_direction = 1, 2 ! for x or y direction
-                                    do j_direction = 1, 2
+                                do i_direction = 1, 3 ! for x or y direction
+                                    do j_direction = 1, 3
                                         ii_0 = L_next(i,i_sublattice,0)
                                         ii_n = L_next(i,i_sublattice,i_direction)
                                         jj_0 = L_next(j,j_sublattice,0)
@@ -81,8 +81,8 @@
                                             & + GRUPC(ii_n,jj_n)*GRUP(ii_0,jj_0) + GRUPC(ii_n,ii_0)*GRUPC(jj_0,jj_n) &
                                         & ) 
                                         if (output_real_QAH == 1 .and. i_sublattice == j_sublattice .and. i_direction == j_direction) then
-                                            real_QAH(imj_x,imj_y) = real_QAH(imj_x,imj_y) +  real( corr_QAH_iijj ) / dble( 4 * LQ * LQ )
-                                            imag_QAH(imj_x,imj_y) = imag_QAH(imj_x,imj_y) + aimag( corr_QAH_iijj ) / dble( 4 * LQ * LQ )
+                                            real_QAH(imj_x,imj_y) = real_QAH(imj_x,imj_y) +  real( corr_QAH_iijj ) / dble( 6 * LQ * LQ )
+                                            imag_QAH(imj_x,imj_y) = imag_QAH(imj_x,imj_y) + aimag( corr_QAH_iijj ) / dble( 6 * LQ * LQ )
                                         end if
                                         S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH(i_sublattice,j_sublattice,i_direction,j_direction) + real( corr_QAH_iijj * exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
                                         S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) = S_QAH_shift(i_sublattice,j_sublattice,i_direction,j_direction) + real( corr_QAH_iijj * exp( cmplx( 0.d0, xk_shift_p(1)*aimj_p(1)+xk_shift_p(2)*aimj_p(2) ) ) ) / dble(LQ)**2
@@ -216,6 +216,11 @@
         xk_p(1) = mom_x * b1_p(1) + mom_y * b2_p(1)
         xk_p(2) = mom_x * b1_p(2) + mom_y * b2_p(2)
 
+        temp_gk11 = cmplx(0.d0,0.d0)
+        temp_gk12 = cmplx(0.d0,0.d0)
+        temp_gk21 = cmplx(0.d0,0.d0)
+        temp_gk22 = cmplx(0.d0,0.d0)
+
         do ix = 1, nlx
             do  iy = 1, nly
                 do jx = 1, nlx
@@ -232,14 +237,22 @@
                         ! fermion correlation function (PRL 128, 225701 (2022))
                         aimj_p(1) = dble(imj_x)* a1_p(1) + dble(imj_y)* a2_p(1)
                         aimj_p(2) = dble(imj_x)* a1_p(2) + dble(imj_y)* a2_p(2)
-                        fermicor11_deltaq = fermicor11_deltaq + real( phase *  exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) * GRUPC(iup,jup) ) / dble(LQ)
-                        fermicor12_deltaq = fermicor12_deltaq + real( phase *  exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) * GRUPC(iup,jdo) ) / dble(LQ)
-                        fermicor21_deltaq = fermicor21_deltaq + real( phase *  exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) * GRUPC(ido,jup) ) / dble(LQ)
-                        fermicor22_deltaq = fermicor22_deltaq + real( phase *  exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) * GRUPC(ido,jdo) ) / dble(LQ)
+                        temp_gk11 = temp_gk11 + phase *  exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) * GRUPC(iup,jup)  / dble(LQ)
+                        temp_gk12 = temp_gk12 + phase *  exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) * GRUPC(iup,jdo)  / dble(LQ)
+                        temp_gk21 = temp_gk21 + phase *  exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) * GRUPC(ido,jup)  / dble(LQ)
+                        temp_gk22 = temp_gk22 + phase *  exp( cmplx( 0.d0, xk_p(1)*aimj_p(1)+xk_p(2)*aimj_p(2) ) ) * GRUPC(ido,jdo)  / dble(LQ)
                     enddo
                 enddo    
             enddo
         enddo
+
+        fermicor11_deltaq = fermicor11_deltaq + real( temp_gk11 )
+        fermicor12_deltaq = fermicor12_deltaq + real( temp_gk12 )
+        fermicor21_deltaq = fermicor21_deltaq + real( temp_gk21 )
+        fermicor22_deltaq = fermicor22_deltaq + real( temp_gk22 )
+
+        gk1221 = gk1221 + real( temp_gk12 * temp_gk21 - temp_gk11 * temp_gk22 + temp_gk11 )
+        gk2112 = gk2112 + real( temp_gk21 * temp_gk12 - temp_gk22 * temp_gk11 + temp_gk22 )
 
         do ix = 1, nlx
             do iy = 1, nly

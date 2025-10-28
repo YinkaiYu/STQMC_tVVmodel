@@ -13,6 +13,7 @@
       real (kind=8), save, allocatable :: S_VBS(:,:), S_VBS_shift(:,:)          ! neighbor, neighbor'
       REAL (Kind=8), save :: fermicor11_deltaq, fermicor12_deltaq, fermicor21_deltaq, fermicor22_deltaq
       REAL (Kind=8), save :: fermicor11_onethird, fermicor12_onethird, fermicor21_onethird, fermicor22_onethird
+      real (kind=8), save :: gk1221, gk2112
       real (kind=8), save :: phaseTot
       Integer, save :: Ncount
 
@@ -32,8 +33,8 @@
         NME_EN = LTROT/2 + LTROT_ME/2 
         allocate( DEN(RX_min:RX_max, RY_min:RY_max, norb, norb) )
         allocate( real_QAH(NLX, NLY), imag_QAH(NLX, NLY) )
-        allocate( S_QAH(Norb,Norb,2,2), S_CM(Norb,Norb), S_VBS(Nbond,Nbond) )
-        allocate( S_QAH_shift(Norb,Norb,2,2), S_CM_shift(Norb,Norb), S_VBS_shift(Nbond,Nbond) )
+        allocate( S_QAH(Norb,Norb,3,3), S_CM(Norb,Norb), S_VBS(Nbond,Nbond) )
+        allocate( S_QAH_shift(Norb,Norb,3,3), S_CM_shift(Norb,Norb), S_VBS_shift(Nbond,Nbond) )
       end Subroutine Allocate_obs
       
 
@@ -69,6 +70,8 @@
         fermicor12_onethird = 0.d0
         fermicor21_onethird = 0.d0
         fermicor22_onethird = 0.d0
+        gk1221 = 0.d0
+        gk2112 = 0.d0
         density = 0.0d0
         kinetic = 0.0d0
         potential = 0.d0
